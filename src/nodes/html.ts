@@ -117,32 +117,6 @@ export default class HTMLElement extends Node {
 
     }
 
-    /**
-     * Get escpaed (as-it) text value of current node and its children.
-     * @return {string} text content
-     */
-    public get rawText() {
-        return this.childNodes.reduce((pre, cur) => {
-            return pre += cur.rawText;
-        }, '');
-    }
-
-    /**
-     * Get unescaped text value of current node and its children.
-     * @return {string} text content
-     */
-    public get text() {
-        return decode(this.rawText);
-    }
-
-    /**
-     * Get unescaped text value of current node and its children.
-     * @return {string} text content
-     */
-    public get textContent() {
-        return this.text;
-    }
-
     get className() {
         const names = this.classNames;
         if (names) {
@@ -551,27 +525,11 @@ export default class HTMLElement extends Node {
     }
 
     /**
-     * Get first child node
-     * @return {Node} first child node
-     */
-    public get firstChild() {
-        return this.childNodes[0];
-    }
-
-    /**
      * Get first child element
      * @return {Node} first child element
      */
     public get firstElementChild() {
         return this.childNodes.find((node) => node.nodeType === NodeType.ELEMENT_NODE);
-    }
-
-    /**
-     * Get last child node
-     * @return {Node} last child node
-     */
-    public get lastChild() {
-        return arr_back(this.childNodes);
     }
 
     /**

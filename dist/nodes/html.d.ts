@@ -62,21 +62,6 @@ export default class HTMLElement extends Node {
      * @param {HTMLElement} newNode     new node
      */
     replaceChild(oldNode: Node, newNode: Node): Node;
-    /**
-     * Get escpaed (as-it) text value of current node and its children.
-     * @return {string} text content
-     */
-    get rawText(): string;
-    /**
-     * Get unescaped text value of current node and its children.
-     * @return {string} text content
-     */
-    get text(): string;
-    /**
-     * Get unescaped text value of current node and its children.
-     * @return {string} text content
-     */
-    get textContent(): string;
     get className(): string;
     set className(names: string);
     get id(): string;
@@ -166,20 +151,10 @@ export default class HTMLElement extends Node {
      */
     appendChild<T extends Node = Node>(node: T): T;
     /**
-     * Get first child node
-     * @return {Node} first child node
-     */
-    get firstChild(): Node;
-    /**
      * Get first child element
      * @return {Node} first child element
      */
     get firstElementChild(): Node;
-    /**
-     * Get last child node
-     * @return {Node} last child node
-     */
-    get lastChild(): Node;
     /**
      * Get last child element
      * @return {Node} last child element

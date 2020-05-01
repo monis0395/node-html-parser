@@ -7,5 +7,32 @@ export default abstract class Node {
     childNodes: Node[];
     text: string;
     rawText: string;
+    parentNode: Node | null;
     abstract toString(): string;
+    /**
+     * Get unescaped text value of current node and its children.
+     * @return {string} text content
+     */
+    get textContent(): string;
+    /**
+     * Get first child node
+     * @return {Node} first child node
+     */
+    get firstChild(): Node;
+    /**
+     * Get last child node
+     * @return {Node} last child node
+     */
+    get lastChild(): Node;
+    /**
+     * Remove Child element from childNodes array
+     * @param {HTMLElement} node     node to remove
+     */
+    removeChild(node: Node): void;
+    /**
+     * Append a child node to childNodes
+     * @param  {Node} node node to append
+     * @return {Node}      node appended
+     */
+    appendChild<T extends Node = Node>(node: T): T;
 }

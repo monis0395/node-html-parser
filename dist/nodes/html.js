@@ -116,41 +116,6 @@ var HTMLElement = /** @class */ (function (_super) {
         this.exchangeChild(oldNode, newNode);
         return oldNode;
     };
-    Object.defineProperty(HTMLElement.prototype, "rawText", {
-        /**
-         * Get escpaed (as-it) text value of current node and its children.
-         * @return {string} text content
-         */
-        get: function () {
-            return this.childNodes.reduce(function (pre, cur) {
-                return pre += cur.rawText;
-            }, '');
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(HTMLElement.prototype, "text", {
-        /**
-         * Get unescaped text value of current node and its children.
-         * @return {string} text content
-         */
-        get: function () {
-            return he_1.decode(this.rawText);
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(HTMLElement.prototype, "textContent", {
-        /**
-         * Get unescaped text value of current node and its children.
-         * @return {string} text content
-         */
-        get: function () {
-            return this.text;
-        },
-        enumerable: false,
-        configurable: true
-    });
     Object.defineProperty(HTMLElement.prototype, "className", {
         get: function () {
             var names = this.classNames;
@@ -588,17 +553,6 @@ var HTMLElement = /** @class */ (function (_super) {
         }
         return node;
     };
-    Object.defineProperty(HTMLElement.prototype, "firstChild", {
-        /**
-         * Get first child node
-         * @return {Node} first child node
-         */
-        get: function () {
-            return this.childNodes[0];
-        },
-        enumerable: false,
-        configurable: true
-    });
     Object.defineProperty(HTMLElement.prototype, "firstElementChild", {
         /**
          * Get first child element
@@ -606,17 +560,6 @@ var HTMLElement = /** @class */ (function (_super) {
          */
         get: function () {
             return this.childNodes.find(function (node) { return node.nodeType === type_1.default.ELEMENT_NODE; });
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(HTMLElement.prototype, "lastChild", {
-        /**
-         * Get last child node
-         * @return {Node} last child node
-         */
-        get: function () {
-            return back_1.default(this.childNodes);
         },
         enumerable: false,
         configurable: true

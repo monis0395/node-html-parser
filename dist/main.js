@@ -1,3 +1,6 @@
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -11,9 +14,6 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 define("back", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -33,9 +33,10 @@ define("nodes/type", ["require", "exports"], function (require, exports) {
     })(NodeType || (NodeType = {}));
     exports.default = NodeType;
 });
-define("nodes/node", ["require", "exports"], function (require, exports) {
+define("nodes/node", ["require", "exports", "back", "he"], function (require, exports, back_1, he_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    back_1 = __importDefault(back_1);
     /**
      * Node Class as base class for TextNode and HTMLElement.
      */
@@ -43,6 +44,63 @@ define("nodes/node", ["require", "exports"], function (require, exports) {
         function Node() {
             this.childNodes = [];
         }
+        Object.defineProperty(Node.prototype, "textContent", {
+            /**
+             * Get unescaped text value of current node and its children.
+             * @return {string} text content
+             */
+            get: function () {
+                return he_1.decode(this.childNodes.reduce(function (pre, cur) {
+                    return pre += cur.rawText;
+                }, ''));
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Node.prototype, "firstChild", {
+            /**
+             * Get first child node
+             * @return {Node} first child node
+             */
+            get: function () {
+                return this.childNodes[0];
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Node.prototype, "lastChild", {
+            /**
+             * Get last child node
+             * @return {Node} last child node
+             */
+            get: function () {
+                return back_1.default(this.childNodes);
+            },
+            enumerable: false,
+            configurable: true
+        });
+        /**
+         * Remove Child element from childNodes array
+         * @param {HTMLElement} node     node to remove
+         */
+        Node.prototype.removeChild = function (node) {
+            this.childNodes = this.childNodes.filter(function (child) {
+                return (child !== node);
+            });
+        };
+        /**
+         * Append a child node to childNodes
+         * @param  {Node} node node to append
+         * @return {Node}      node appended
+         */
+        Node.prototype.appendChild = function (node) {
+            this.childNodes.push(node);
+            if (node.parentNode) {
+                node.parentNode.removeChild(node);
+            }
+            node.parentNode = this;
+            return node;
+        };
         return Node;
     }());
     exports.default = Node;
@@ -645,7 +703,7 @@ define("nodes/style", ["require", "exports"], function (require, exports) {
         _loop_1(jsName);
     }
 });
-define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "nodes/text", "matcher", "back", "nodes/comment", "nodes/style"], function (require, exports, he_1, node_3, type_3, text_1, matcher_1, back_1, comment_1, style_1) {
+define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "nodes/text", "matcher", "back", "nodes/comment", "nodes/style"], function (require, exports, he_2, node_3, type_3, text_1, matcher_1, back_2, comment_1, style_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.parse = void 0;
@@ -653,7 +711,7 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
     type_3 = __importDefault(type_3);
     text_1 = __importDefault(text_1);
     matcher_1 = __importDefault(matcher_1);
-    back_1 = __importDefault(back_1);
+    back_2 = __importDefault(back_2);
     comment_1 = __importDefault(comment_1);
     style_1 = __importDefault(style_1);
     var kBlockElements = {
@@ -747,41 +805,6 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
             this.exchangeChild(oldNode, newNode);
             return oldNode;
         };
-        Object.defineProperty(HTMLElement.prototype, "rawText", {
-            /**
-             * Get escpaed (as-it) text value of current node and its children.
-             * @return {string} text content
-             */
-            get: function () {
-                return this.childNodes.reduce(function (pre, cur) {
-                    return pre += cur.rawText;
-                }, '');
-            },
-            enumerable: false,
-            configurable: true
-        });
-        Object.defineProperty(HTMLElement.prototype, "text", {
-            /**
-             * Get unescaped text value of current node and its children.
-             * @return {string} text content
-             */
-            get: function () {
-                return he_1.decode(this.rawText);
-            },
-            enumerable: false,
-            configurable: true
-        });
-        Object.defineProperty(HTMLElement.prototype, "textContent", {
-            /**
-             * Get unescaped text value of current node and its children.
-             * @return {string} text content
-             */
-            get: function () {
-                return this.text;
-            },
-            enumerable: false,
-            configurable: true
-        });
         Object.defineProperty(HTMLElement.prototype, "className", {
             get: function () {
                 var names = this.classNames;
@@ -1122,7 +1145,7 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
             return this.childNodes.reduce(function (res, cur) {
                 stack.push([cur, 0, false]);
                 while (stack.length) {
-                    var state = back_1.default(stack); // get last element
+                    var state = back_2.default(stack); // get last element
                     var el = state[0];
                     if (state[1] === 0) {
                         // Seen for first time.
@@ -1176,7 +1199,7 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
                 var node = _a[_i];
                 stack.push([node, 0, false]);
                 while (stack.length) {
-                    var state = back_1.default(stack);
+                    var state = back_2.default(stack);
                     var el = state[0];
                     if (state[1] === 0) {
                         // Seen for first time.
@@ -1219,17 +1242,6 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
             }
             return node;
         };
-        Object.defineProperty(HTMLElement.prototype, "firstChild", {
-            /**
-             * Get first child node
-             * @return {Node} first child node
-             */
-            get: function () {
-                return this.childNodes[0];
-            },
-            enumerable: false,
-            configurable: true
-        });
         Object.defineProperty(HTMLElement.prototype, "firstElementChild", {
             /**
              * Get first child element
@@ -1237,17 +1249,6 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
              */
             get: function () {
                 return this.childNodes.find(function (node) { return node.nodeType === type_3.default.ELEMENT_NODE; });
-            },
-            enumerable: false,
-            configurable: true
-        });
-        Object.defineProperty(HTMLElement.prototype, "lastChild", {
-            /**
-             * Get last child node
-             * @return {Node} last child node
-             */
-            get: function () {
-                return back_1.default(this.childNodes);
             },
             enumerable: false,
             configurable: true
@@ -1276,7 +1277,7 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
                 var attrs = this.rawAttributes;
                 for (var key in attrs) {
                     var val = attrs[key] || '';
-                    this._attrs[key] = he_1.decode(val);
+                    this._attrs[key] = he_2.decode(val);
                 }
                 return this._attrs;
             },
@@ -1345,7 +1346,7 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
             var attrs = this.rawAttributes;
             attrs[key] = String(value);
             if (this._attrs) {
-                this._attrs[key] = he_1.decode(attrs[key]);
+                this._attrs[key] = he_2.decode(attrs[key]);
             }
             // Update rawString
             this.rawAttrs = Object.keys(attrs).map(function (name) {
@@ -1511,7 +1512,7 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
                 if (!match[4] && kElementsClosedByOpening[tagName]) {
                     if (kElementsClosedByOpening[tagName][match[2]]) {
                         stack.pop();
-                        currentParent = back_1.default(stack);
+                        currentParent = back_2.default(stack);
                     }
                 }
                 // ignore container tag we add above
@@ -1556,7 +1557,7 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
                 while (true) {
                     if (currentParent.tagName === match[2]) {
                         stack.pop();
-                        currentParent = back_1.default(stack);
+                        currentParent = back_2.default(stack);
                         break;
                     }
                     else {
@@ -1565,7 +1566,7 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
                         if (kElementsClosedByClosing[tagName]) {
                             if (kElementsClosedByClosing[tagName][match[2]]) {
                                 stack.pop();
-                                currentParent = back_1.default(stack);
+                                currentParent = back_2.default(stack);
                                 continue;
                             }
                         }
@@ -1585,7 +1586,7 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
             var _loop_3 = function () {
                 // Handle each error elements.
                 var last = stack.pop();
-                var oneBefore = back_1.default(stack);
+                var oneBefore = back_2.default(stack);
                 if (last.parentNode && last.parentNode.parentNode) {
                     if (last.parentNode === oneBefore && last.tagName === oneBefore.tagName) {
                         // Pair error case <h3> <h3> handle : Fixes to <h3> </h3>
