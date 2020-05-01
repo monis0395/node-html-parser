@@ -101,6 +101,30 @@ define("nodes/node", ["require", "exports", "back", "he"], function (require, ex
             node.parentNode = this;
             return node;
         };
+        /**
+         * Exchanges given child with new child
+         * @param {HTMLElement} oldNode     node to exchange
+         * @param {HTMLElement} newNode     new node
+         */
+        Node.prototype.exchangeChild = function (oldNode, newNode) {
+            var idx = -1;
+            for (var i = 0; i < this.childNodes.length; i++) {
+                if (this.childNodes[i] === oldNode) {
+                    idx = i;
+                    break;
+                }
+            }
+            this.childNodes[idx] = newNode;
+        };
+        /**
+         * Exchanges given child with new child
+         * @param {HTMLElement} oldNode     node to exchange
+         * @param {HTMLElement} newNode     new node
+         */
+        Node.prototype.replaceChild = function (oldNode, newNode) {
+            this.exchangeChild(oldNode, newNode);
+            return oldNode;
+        };
         return Node;
     }());
     exports.default = Node;
@@ -772,30 +796,6 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
             _this.style = new style_1.default(_this);
             return _this;
         }
-        /**
-         * Exchanges given child with new child
-         * @param {HTMLElement} oldNode     node to exchange
-         * @param {HTMLElement} newNode     new node
-         */
-        HTMLElement.prototype.exchangeChild = function (oldNode, newNode) {
-            var idx = -1;
-            for (var i = 0; i < this.childNodes.length; i++) {
-                if (this.childNodes[i] === oldNode) {
-                    idx = i;
-                    break;
-                }
-            }
-            this.childNodes[idx] = newNode;
-        };
-        /**
-         * Exchanges given child with new child
-         * @param {HTMLElement} oldNode     node to exchange
-         * @param {HTMLElement} newNode     new node
-         */
-        HTMLElement.prototype.replaceChild = function (oldNode, newNode) {
-            this.exchangeChild(oldNode, newNode);
-            return oldNode;
-        };
         Object.defineProperty(HTMLElement.prototype, "className", {
             get: function () {
                 var names = this.classNames;

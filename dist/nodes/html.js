@@ -83,30 +83,6 @@ var HTMLElement = /** @class */ (function (_super) {
         _this.style = new style_1.default(_this);
         return _this;
     }
-    /**
-     * Exchanges given child with new child
-     * @param {HTMLElement} oldNode     node to exchange
-     * @param {HTMLElement} newNode     new node
-     */
-    HTMLElement.prototype.exchangeChild = function (oldNode, newNode) {
-        var idx = -1;
-        for (var i = 0; i < this.childNodes.length; i++) {
-            if (this.childNodes[i] === oldNode) {
-                idx = i;
-                break;
-            }
-        }
-        this.childNodes[idx] = newNode;
-    };
-    /**
-     * Exchanges given child with new child
-     * @param {HTMLElement} oldNode     node to exchange
-     * @param {HTMLElement} newNode     new node
-     */
-    HTMLElement.prototype.replaceChild = function (oldNode, newNode) {
-        this.exchangeChild(oldNode, newNode);
-        return oldNode;
-    };
     Object.defineProperty(HTMLElement.prototype, "className", {
         get: function () {
             var names = this.classNames;

@@ -69,6 +69,30 @@ var Node = /** @class */ (function () {
         node.parentNode = this;
         return node;
     };
+    /**
+     * Exchanges given child with new child
+     * @param {HTMLElement} oldNode     node to exchange
+     * @param {HTMLElement} newNode     new node
+     */
+    Node.prototype.exchangeChild = function (oldNode, newNode) {
+        var idx = -1;
+        for (var i = 0; i < this.childNodes.length; i++) {
+            if (this.childNodes[i] === oldNode) {
+                idx = i;
+                break;
+            }
+        }
+        this.childNodes[idx] = newNode;
+    };
+    /**
+     * Exchanges given child with new child
+     * @param {HTMLElement} oldNode     node to exchange
+     * @param {HTMLElement} newNode     new node
+     */
+    Node.prototype.replaceChild = function (oldNode, newNode) {
+        this.exchangeChild(oldNode, newNode);
+        return oldNode;
+    };
     return Node;
 }());
 exports.default = Node;

@@ -45,18 +45,6 @@ export default class HTMLElement extends Node {
      * @memberof HTMLElement
      */
     constructor(tagName: string, keyAttrs: KeyAttributes, rawAttrs?: string, parentNode?: Node);
-    /**
-     * Exchanges given child with new child
-     * @param {HTMLElement} oldNode     node to exchange
-     * @param {HTMLElement} newNode     new node
-     */
-    exchangeChild(oldNode: Node, newNode: Node): void;
-    /**
-     * Exchanges given child with new child
-     * @param {HTMLElement} oldNode     node to exchange
-     * @param {HTMLElement} newNode     new node
-     */
-    replaceChild(oldNode: Node, newNode: Node): Node;
     get className(): string;
     set className(names: string);
     get id(): string;

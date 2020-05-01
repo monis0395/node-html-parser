@@ -63,4 +63,30 @@ export default abstract class Node {
         node.parentNode = this;
         return node;
     }
+
+    /**
+     * Exchanges given child with new child
+     * @param {HTMLElement} oldNode     node to exchange
+     * @param {HTMLElement} newNode     new node
+     */
+    public exchangeChild(oldNode: Node, newNode: Node) {
+        let idx = -1;
+        for (let i = 0; i < this.childNodes.length; i++) {
+            if (this.childNodes[i] === oldNode) {
+                idx = i;
+                break;
+            }
+        }
+        this.childNodes[idx] = newNode;
+    }
+
+    /**
+     * Exchanges given child with new child
+     * @param {HTMLElement} oldNode     node to exchange
+     * @param {HTMLElement} newNode     new node
+     */
+    public replaceChild(oldNode: Node, newNode: Node) {
+        this.exchangeChild(oldNode, newNode);
+        return oldNode;
+    }
 }
