@@ -44,6 +44,7 @@ define("nodes/node", ["require", "exports", "nodes/type", "back", "he"], functio
     var Node = /** @class */ (function () {
         function Node() {
             this.childNodes = [];
+            this.tagName = '';
         }
         Object.defineProperty(Node.prototype, "children", {
             get: function () {

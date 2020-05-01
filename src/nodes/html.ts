@@ -53,7 +53,7 @@ export default class HTMLElement extends Node {
     public style: Style;
     public parentElement: HTMLElement = null;
     public parentNode: Node = null;
-    public tagName: string;
+
     /**
      * Node Type declaration.
      */

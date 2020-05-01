@@ -12,6 +12,7 @@ var he_1 = require("he");
 var Node = /** @class */ (function () {
     function Node() {
         this.childNodes = [];
+        this.tagName = '';
     }
     Object.defineProperty(Node.prototype, "children", {
         get: function () {

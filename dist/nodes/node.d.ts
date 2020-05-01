@@ -12,6 +12,7 @@ export default abstract class Node {
     previousSibling: Node | null;
     nextElementSibling: Node | null;
     previousElementSibling: Node | null;
+    tagName: string;
     abstract toString(): string;
     get children(): Node[];
     get childElementCount(): number;
