@@ -13,6 +13,8 @@ export default abstract class Node {
     parentNode: Node | null;
     nextSibling: Node | null;
     previousSibling: Node | null;
+    nextElementSibling: Node | null;
+    previousElementSibling: Node | null;
 
     abstract toString(): string;
 
@@ -90,6 +92,15 @@ export default abstract class Node {
         if (nextSibling) {
             nextSibling.previousSibling = previousSibling;
         }
+
+        const previousElementSibling = node.previousElementSibling || null;
+        const nextElementSibling = node.nextElementSibling || null;
+        if (previousElementSibling) {
+            previousElementSibling.nextElementSibling = nextElementSibling;
+        }
+        if (nextElementSibling) {
+            nextElementSibling.previousElementSibling = previousElementSibling;
+        }
     }
 
     /**
@@ -107,6 +118,13 @@ export default abstract class Node {
         }
         node.previousSibling = lastNode;
         node.nextSibling = null;
+
+        const lastElement = this.children[this.children.length - 1] || null;
+        if (lastElement && node.nodeType === NodeType.ELEMENT_NODE) {
+            lastElement.nextElementSibling = node;
+        }
+        node.previousElementSibling = lastElement;
+        node.nextElementSibling = null;
 
         this.childNodes.push(node);
 
@@ -140,6 +158,19 @@ export default abstract class Node {
         }
         if (nextSibling) {
             nextSibling.previousSibling = newNode;
+        }
+
+        const previousElementSibling = oldNode.previousElementSibling || null;
+        const nextElementSibling = oldNode.nextElementSibling || null;
+
+        newNode.previousElementSibling = previousElementSibling;
+        newNode.nextElementSibling = nextElementSibling;
+
+        if (previousElementSibling && newNode.nodeType === NodeType.ELEMENT_NODE) {
+            previousSibling.nextElementSibling = newNode;
+        }
+        if (nextSibling && newNode.nodeType === NodeType.ELEMENT_NODE) {
+            nextSibling.previousElementSibling = newNode;
         }
     }
 

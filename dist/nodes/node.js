@@ -107,6 +107,14 @@ var Node = /** @class */ (function () {
         if (nextSibling) {
             nextSibling.previousSibling = previousSibling;
         }
+        var previousElementSibling = node.previousElementSibling || null;
+        var nextElementSibling = node.nextElementSibling || null;
+        if (previousElementSibling) {
+            previousElementSibling.nextElementSibling = nextElementSibling;
+        }
+        if (nextElementSibling) {
+            nextElementSibling.previousElementSibling = previousElementSibling;
+        }
     };
     /**
      * Append a child node to childNodes
@@ -123,6 +131,12 @@ var Node = /** @class */ (function () {
         }
         node.previousSibling = lastNode;
         node.nextSibling = null;
+        var lastElement = this.children[this.children.length - 1] || null;
+        if (lastElement && node.nodeType === type_1.default.ELEMENT_NODE) {
+            lastElement.nextElementSibling = node;
+        }
+        node.previousElementSibling = lastElement;
+        node.nextElementSibling = null;
         this.childNodes.push(node);
         node.parentNode = this;
         return node;
@@ -150,6 +164,16 @@ var Node = /** @class */ (function () {
         }
         if (nextSibling) {
             nextSibling.previousSibling = newNode;
+        }
+        var previousElementSibling = oldNode.previousElementSibling || null;
+        var nextElementSibling = oldNode.nextElementSibling || null;
+        newNode.previousElementSibling = previousElementSibling;
+        newNode.nextElementSibling = nextElementSibling;
+        if (previousElementSibling && newNode.nodeType === type_1.default.ELEMENT_NODE) {
+            previousSibling.nextElementSibling = newNode;
+        }
+        if (nextSibling && newNode.nodeType === type_1.default.ELEMENT_NODE) {
+            nextSibling.previousElementSibling = newNode;
         }
     };
     /**
