@@ -33,9 +33,10 @@ define("nodes/type", ["require", "exports"], function (require, exports) {
     })(NodeType || (NodeType = {}));
     exports.default = NodeType;
 });
-define("nodes/node", ["require", "exports", "back", "he"], function (require, exports, back_1, he_1) {
+define("nodes/node", ["require", "exports", "nodes/type", "back", "he"], function (require, exports, type_1, back_1, he_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    type_1 = __importDefault(type_1);
     back_1 = __importDefault(back_1);
     /**
      * Node Class as base class for TextNode and HTMLElement.
@@ -44,6 +45,20 @@ define("nodes/node", ["require", "exports", "back", "he"], function (require, ex
         function Node() {
             this.childNodes = [];
         }
+        Object.defineProperty(Node.prototype, "children", {
+            get: function () {
+                return this.childNodes.filter(function (node) { return node.nodeType === type_1.default.ELEMENT_NODE; });
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Node.prototype, "childElementCount", {
+            get: function () {
+                return this.childNodes.length;
+            },
+            enumerable: false,
+            configurable: true
+        });
         Object.defineProperty(Node.prototype, "textContent", {
             /**
              * Get unescaped text value of current node and its children.
@@ -75,6 +90,35 @@ define("nodes/node", ["require", "exports", "back", "he"], function (require, ex
              */
             get: function () {
                 return back_1.default(this.childNodes);
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Node.prototype, "firstElementChild", {
+            /**
+             * Get first child element
+             * @return {Node} first child element
+             */
+            get: function () {
+                return this.childNodes.find(function (node) { return node.nodeType === type_1.default.ELEMENT_NODE; });
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Node.prototype, "lastElementChild", {
+            /**
+             * Get last child element
+             * @return {Node} last child element
+             */
+            get: function () {
+                var idx;
+                for (var i = this.childNodes.length - 1; i > -1; i--) {
+                    if (this.childNodes[i].nodeType === type_1.default.ELEMENT_NODE) {
+                        idx = i;
+                        break;
+                    }
+                }
+                return this.childNodes[idx];
             },
             enumerable: false,
             configurable: true
@@ -153,11 +197,11 @@ define("nodes/node", ["require", "exports", "back", "he"], function (require, ex
     }());
     exports.default = Node;
 });
-define("nodes/comment", ["require", "exports", "nodes/node", "nodes/type"], function (require, exports, node_1, type_1) {
+define("nodes/comment", ["require", "exports", "nodes/node", "nodes/type"], function (require, exports, node_1, type_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     node_1 = __importDefault(node_1);
-    type_1 = __importDefault(type_1);
+    type_2 = __importDefault(type_2);
     var CommentNode = /** @class */ (function (_super) {
         __extends(CommentNode, _super);
         function CommentNode(value) {
@@ -166,7 +210,7 @@ define("nodes/comment", ["require", "exports", "nodes/node", "nodes/type"], func
              * Node Type declaration.
              * @type {Number}
              */
-            _this.nodeType = type_1.default.COMMENT_NODE;
+            _this.nodeType = type_2.default.COMMENT_NODE;
             _this.rawText = value;
             return _this;
         }
@@ -188,10 +232,10 @@ define("nodes/comment", ["require", "exports", "nodes/node", "nodes/type"], func
     }(node_1.default));
     exports.default = CommentNode;
 });
-define("nodes/text", ["require", "exports", "nodes/type", "nodes/node"], function (require, exports, type_2, node_2) {
+define("nodes/text", ["require", "exports", "nodes/type", "nodes/node"], function (require, exports, type_3, node_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    type_2 = __importDefault(type_2);
+    type_3 = __importDefault(type_3);
     node_2 = __importDefault(node_2);
     /**
      * TextNode to contain a text element in DOM tree.
@@ -205,7 +249,7 @@ define("nodes/text", ["require", "exports", "nodes/type", "nodes/node"], functio
              * Node Type declaration.
              * @type {Number}
              */
-            _this.nodeType = type_2.default.TEXT_NODE;
+            _this.nodeType = type_3.default.TEXT_NODE;
             _this.rawText = value;
             return _this;
         }
@@ -751,12 +795,12 @@ define("nodes/style", ["require", "exports"], function (require, exports) {
         _loop_1(jsName);
     }
 });
-define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "nodes/text", "matcher", "back", "nodes/comment", "nodes/style"], function (require, exports, he_2, node_3, type_3, text_1, matcher_1, back_2, comment_1, style_1) {
+define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "nodes/text", "matcher", "back", "nodes/comment", "nodes/style"], function (require, exports, he_2, node_3, type_4, text_1, matcher_1, back_2, comment_1, style_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.parse = void 0;
     node_3 = __importDefault(node_3);
-    type_3 = __importDefault(type_3);
+    type_4 = __importDefault(type_4);
     text_1 = __importDefault(text_1);
     matcher_1 = __importDefault(matcher_1);
     back_2 = __importDefault(back_2);
@@ -804,10 +848,10 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
             /**
              * Node Type declaration.
              */
-            _this.nodeType = type_3.default.ELEMENT_NODE;
+            _this.nodeType = type_4.default.ELEMENT_NODE;
             _this.rawAttrs = rawAttrs || '';
             _this.parentNode = parentNode || null;
-            if (_this.parentNode && _this.parentNode.nodeType === type_3.default.ELEMENT_NODE) {
+            if (_this.parentNode && _this.parentNode.nodeType === type_4.default.ELEMENT_NODE) {
                 _this.parentElement = _this.parentNode;
             }
             _this.childNodes = [];
@@ -918,7 +962,7 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
                 var currentBlock = [];
                 var blocks = [currentBlock];
                 function dfs(node) {
-                    if (node.nodeType === type_3.default.ELEMENT_NODE) {
+                    if (node.nodeType === type_4.default.ELEMENT_NODE) {
                         if (kBlockElements[node.tagName]) {
                             if (currentBlock.length > 0) {
                                 blocks.push(currentBlock = []);
@@ -932,7 +976,7 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
                             node.childNodes.forEach(dfs);
                         }
                     }
-                    else if (node.nodeType === type_3.default.TEXT_NODE) {
+                    else if (node.nodeType === type_4.default.TEXT_NODE) {
                         if (node.isWhitespace) {
                             // Whitespace node, postponed output
                             currentBlock.prependWhitespace = true;
@@ -1026,7 +1070,7 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
         HTMLElement.prototype.trimRight = function (pattern) {
             for (var i = 0; i < this.childNodes.length; i++) {
                 var childNode = this.childNodes[i];
-                if (childNode.nodeType === type_3.default.ELEMENT_NODE) {
+                if (childNode.nodeType === type_4.default.ELEMENT_NODE) {
                     childNode.trimRight(pattern);
                 }
                 else {
@@ -1057,10 +1101,10 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
                     write(node.tagName + idStr + classStr);
                     indention++;
                     node.childNodes.forEach(function (childNode) {
-                        if (childNode.nodeType === type_3.default.ELEMENT_NODE) {
+                        if (childNode.nodeType === type_4.default.ELEMENT_NODE) {
                             dfs(childNode);
                         }
-                        else if (childNode.nodeType === type_3.default.TEXT_NODE) {
+                        else if (childNode.nodeType === type_4.default.TEXT_NODE) {
                             if (!childNode.isWhitespace)
                                 write('#text');
                         }
@@ -1081,13 +1125,13 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
             var _this = this;
             var o = 0;
             this.childNodes.forEach(function (node) {
-                if (node.nodeType === type_3.default.TEXT_NODE) {
+                if (node.nodeType === type_4.default.TEXT_NODE) {
                     if (node.isWhitespace) {
                         return;
                     }
                     node.rawText = node.rawText.trim();
                 }
-                else if (node.nodeType === type_3.default.ELEMENT_NODE) {
+                else if (node.nodeType === type_4.default.ELEMENT_NODE) {
                     node.removeWhitespace();
                 }
                 _this.childNodes[o++] = node;
@@ -1164,7 +1208,7 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
                     var el = state[0];
                     if (state[1] === 0) {
                         // Seen for first time.
-                        if (el.nodeType !== type_3.default.ELEMENT_NODE) {
+                        if (el.nodeType !== type_4.default.ELEMENT_NODE) {
                             stack.pop();
                             continue;
                         }
@@ -1218,7 +1262,7 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
                     var el = state[0];
                     if (state[1] === 0) {
                         // Seen for first time.
-                        if (el.nodeType !== type_3.default.ELEMENT_NODE) {
+                        if (el.nodeType !== type_4.default.ELEMENT_NODE) {
                             stack.pop();
                             continue;
                         }
@@ -1241,28 +1285,6 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
             }
             return null;
         };
-        Object.defineProperty(HTMLElement.prototype, "firstElementChild", {
-            /**
-             * Get first child element
-             * @return {Node} first child element
-             */
-            get: function () {
-                return this.childNodes.find(function (node) { return node.nodeType === type_3.default.ELEMENT_NODE; });
-            },
-            enumerable: false,
-            configurable: true
-        });
-        Object.defineProperty(HTMLElement.prototype, "lastElementChild", {
-            /**
-             * Get last child element
-             * @return {Node} last child element
-             */
-            get: function () {
-                return this.childNodes.reverse().find(function (node) { return node.nodeType === type_3.default.ELEMENT_NODE; });
-            },
-            enumerable: false,
-            configurable: true
-        });
         Object.defineProperty(HTMLElement.prototype, "attributes", {
             /**
              * Get attributes
@@ -1625,7 +1647,7 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
     }
     exports.parse = parse;
 });
-define("index", ["require", "exports", "nodes/comment", "nodes/html", "nodes/node", "nodes/text", "nodes/style", "nodes/type"], function (require, exports, comment_2, html_1, node_4, text_2, style_2, type_4) {
+define("index", ["require", "exports", "nodes/comment", "nodes/html", "nodes/node", "nodes/text", "nodes/style", "nodes/type"], function (require, exports, comment_2, html_1, node_4, text_2, style_2, type_5) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     Object.defineProperty(exports, "CommentNode", { enumerable: true, get: function () { return comment_2.default; } });
@@ -1635,5 +1657,5 @@ define("index", ["require", "exports", "nodes/comment", "nodes/html", "nodes/nod
     Object.defineProperty(exports, "Node", { enumerable: true, get: function () { return node_4.default; } });
     Object.defineProperty(exports, "TextNode", { enumerable: true, get: function () { return text_2.default; } });
     Object.defineProperty(exports, "Style", { enumerable: true, get: function () { return style_2.default; } });
-    Object.defineProperty(exports, "NodeType", { enumerable: true, get: function () { return type_4.default; } });
+    Object.defineProperty(exports, "NodeType", { enumerable: true, get: function () { return type_5.default; } });
 });

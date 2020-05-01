@@ -16,6 +16,14 @@ export default abstract class Node {
 
     abstract toString(): string;
 
+    get children() {
+        return this.childNodes.filter((node) => node.nodeType === NodeType.ELEMENT_NODE);
+    }
+
+    get childElementCount() {
+        return this.childNodes.length;
+    }
+
     /**
      * Get unescaped text value of current node and its children.
      * @return {string} text content
@@ -40,6 +48,29 @@ export default abstract class Node {
      */
     public get lastChild() {
         return arr_back(this.childNodes);
+    }
+
+    /**
+     * Get first child element
+     * @return {Node} first child element
+     */
+    public get firstElementChild() {
+        return this.childNodes.find((node) => node.nodeType === NodeType.ELEMENT_NODE);
+    }
+
+    /**
+     * Get last child element
+     * @return {Node} last child element
+     */
+    public get lastElementChild() {
+        let idx;
+        for (let i = this.childNodes.length - 1; i > -1; i--) {
+            if (this.childNodes[i].nodeType === NodeType.ELEMENT_NODE) {
+                idx = i;
+                break;
+            }
+        }
+        return this.childNodes[idx];
     }
 
     /**

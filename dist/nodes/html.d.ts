@@ -128,16 +128,6 @@ export default class HTMLElement extends Node {
      */
     querySelector(selector: string | Matcher): HTMLElement;
     /**
-     * Get first child element
-     * @return {Node} first child element
-     */
-    get firstElementChild(): Node;
-    /**
-     * Get last child element
-     * @return {Node} last child element
-     */
-    get lastElementChild(): Node;
-    /**
      * Get attributes
      * @return {Object} parsed and unescaped attributes
      */

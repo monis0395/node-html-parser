@@ -11,6 +11,8 @@ export default abstract class Node {
     nextSibling: Node | null;
     previousSibling: Node | null;
     abstract toString(): string;
+    get children(): Node[];
+    get childElementCount(): number;
     /**
      * Get unescaped text value of current node and its children.
      * @return {string} text content
@@ -26,6 +28,16 @@ export default abstract class Node {
      * @return {Node} last child node
      */
     get lastChild(): Node;
+    /**
+     * Get first child element
+     * @return {Node} first child element
+     */
+    get firstElementChild(): Node;
+    /**
+     * Get last child element
+     * @return {Node} last child element
+     */
+    get lastElementChild(): Node;
     /**
      * Remove Child element from childNodes array
      * @param {HTMLElement} node     node to remove

@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var type_1 = __importDefault(require("./type"));
 var back_1 = __importDefault(require("../back"));
 var he_1 = require("he");
 /**
@@ -12,6 +13,20 @@ var Node = /** @class */ (function () {
     function Node() {
         this.childNodes = [];
     }
+    Object.defineProperty(Node.prototype, "children", {
+        get: function () {
+            return this.childNodes.filter(function (node) { return node.nodeType === type_1.default.ELEMENT_NODE; });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Node.prototype, "childElementCount", {
+        get: function () {
+            return this.childNodes.length;
+        },
+        enumerable: false,
+        configurable: true
+    });
     Object.defineProperty(Node.prototype, "textContent", {
         /**
          * Get unescaped text value of current node and its children.
@@ -43,6 +58,35 @@ var Node = /** @class */ (function () {
          */
         get: function () {
             return back_1.default(this.childNodes);
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Node.prototype, "firstElementChild", {
+        /**
+         * Get first child element
+         * @return {Node} first child element
+         */
+        get: function () {
+            return this.childNodes.find(function (node) { return node.nodeType === type_1.default.ELEMENT_NODE; });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Node.prototype, "lastElementChild", {
+        /**
+         * Get last child element
+         * @return {Node} last child element
+         */
+        get: function () {
+            var idx;
+            for (var i = this.childNodes.length - 1; i > -1; i--) {
+                if (this.childNodes[i].nodeType === type_1.default.ELEMENT_NODE) {
+                    idx = i;
+                    break;
+                }
+            }
+            return this.childNodes[idx];
         },
         enumerable: false,
         configurable: true
