@@ -87,6 +87,14 @@ define("nodes/node", ["require", "exports", "back", "he"], function (require, ex
             this.childNodes = this.childNodes.filter(function (child) {
                 return (child !== node);
             });
+            var previousSibling = node.previousSibling;
+            var nextSibling = node.nextSibling;
+            if (previousSibling) {
+                previousSibling.nextSibling = nextSibling;
+            }
+            if (nextSibling) {
+                nextSibling.previousSibling = previousSibling;
+            }
         };
         /**
          * Append a child node to childNodes
@@ -94,10 +102,14 @@ define("nodes/node", ["require", "exports", "back", "he"], function (require, ex
          * @return {Node}      node appended
          */
         Node.prototype.appendChild = function (node) {
-            this.childNodes.push(node);
             if (node.parentNode) {
                 node.parentNode.removeChild(node);
             }
+            var lastNode = this.childNodes[this.childNodes.length - 1];
+            lastNode.nextSibling = node;
+            node.previousSibling = lastNode;
+            node.nextSibling = null;
+            this.childNodes.push(node);
             node.parentNode = this;
             return node;
         };
@@ -115,6 +127,16 @@ define("nodes/node", ["require", "exports", "back", "he"], function (require, ex
                 }
             }
             this.childNodes[idx] = newNode;
+            var previousSibling = oldNode.previousSibling;
+            var nextSibling = oldNode.nextSibling;
+            newNode.previousSibling = previousSibling;
+            newNode.nextSibling = nextSibling;
+            if (previousSibling) {
+                previousSibling.nextSibling = newNode;
+            }
+            if (nextSibling) {
+                nextSibling.previousSibling = newNode;
+            }
         };
         /**
          * Exchanges given child with new child

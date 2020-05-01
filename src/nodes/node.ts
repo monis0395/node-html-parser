@@ -11,6 +11,8 @@ export default abstract class Node {
     text: string;
     rawText: string;
     parentNode: Node | null;
+    nextSibling: Node | null;
+    previousSibling: Node | null;
 
     abstract toString(): string;
 
@@ -48,6 +50,15 @@ export default abstract class Node {
         this.childNodes = this.childNodes.filter((child) => {
             return (child !== node);
         });
+
+        const previousSibling = node.previousSibling;
+        const nextSibling = node.nextSibling;
+        if (previousSibling) {
+            previousSibling.nextSibling = nextSibling;
+        }
+        if (nextSibling) {
+            nextSibling.previousSibling = previousSibling;
+        }
     }
 
     /**
@@ -56,10 +67,16 @@ export default abstract class Node {
      * @return {Node}      node appended
      */
     public appendChild<T extends Node = Node>(node: T) {
-        this.childNodes.push(node);
         if (node.parentNode) {
             node.parentNode.removeChild(node);
         }
+        const lastNode = this.childNodes[this.childNodes.length - 1];
+        lastNode.nextSibling = node;
+        node.previousSibling = lastNode;
+        node.nextSibling = null;
+
+        this.childNodes.push(node);
+
         node.parentNode = this;
         return node;
     }
@@ -78,6 +95,19 @@ export default abstract class Node {
             }
         }
         this.childNodes[idx] = newNode;
+
+        const previousSibling = oldNode.previousSibling;
+        const nextSibling = oldNode.nextSibling;
+
+        newNode.previousSibling = previousSibling;
+        newNode.nextSibling = nextSibling;
+
+        if (previousSibling) {
+            previousSibling.nextSibling = newNode;
+        }
+        if (nextSibling) {
+            nextSibling.previousSibling = newNode;
+        }
     }
 
     /**

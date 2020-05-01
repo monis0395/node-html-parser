@@ -8,6 +8,8 @@ export default abstract class Node {
     text: string;
     rawText: string;
     parentNode: Node | null;
+    nextSibling: Node | null;
+    previousSibling: Node | null;
     abstract toString(): string;
     /**
      * Get unescaped text value of current node and its children.
