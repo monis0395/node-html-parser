@@ -1211,6 +1211,17 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
             enumerable: false,
             configurable: true
         });
+        Object.defineProperty(HTMLElement.prototype, "firstElementChild", {
+            /**
+             * Get first child element
+             * @return {Node} first child element
+             */
+            get: function () {
+                return this.childNodes.find(function (node) { return node.nodeType === type_3.default.ELEMENT_NODE; });
+            },
+            enumerable: false,
+            configurable: true
+        });
         Object.defineProperty(HTMLElement.prototype, "lastChild", {
             /**
              * Get last child node
@@ -1218,6 +1229,17 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
              */
             get: function () {
                 return back_1.default(this.childNodes);
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(HTMLElement.prototype, "lastElementChild", {
+            /**
+             * Get last child element
+             * @return {Node} last child element
+             */
+            get: function () {
+                return this.childNodes.reverse().find(function (node) { return node.nodeType === type_3.default.ELEMENT_NODE; });
             },
             enumerable: false,
             configurable: true

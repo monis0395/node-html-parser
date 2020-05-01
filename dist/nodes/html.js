@@ -580,6 +580,17 @@ var HTMLElement = /** @class */ (function (_super) {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(HTMLElement.prototype, "firstElementChild", {
+        /**
+         * Get first child element
+         * @return {Node} first child element
+         */
+        get: function () {
+            return this.childNodes.find(function (node) { return node.nodeType === type_1.default.ELEMENT_NODE; });
+        },
+        enumerable: false,
+        configurable: true
+    });
     Object.defineProperty(HTMLElement.prototype, "lastChild", {
         /**
          * Get last child node
@@ -587,6 +598,17 @@ var HTMLElement = /** @class */ (function (_super) {
          */
         get: function () {
             return back_1.default(this.childNodes);
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(HTMLElement.prototype, "lastElementChild", {
+        /**
+         * Get last child element
+         * @return {Node} last child element
+         */
+        get: function () {
+            return this.childNodes.reverse().find(function (node) { return node.nodeType === type_1.default.ELEMENT_NODE; });
         },
         enumerable: false,
         configurable: true

@@ -540,11 +540,27 @@ export default class HTMLElement extends Node {
     }
 
     /**
+     * Get first child element
+     * @return {Node} first child element
+     */
+    public get firstElementChild() {
+        return this.childNodes.find((node) => node.nodeType === NodeType.ELEMENT_NODE);
+    }
+
+    /**
      * Get last child node
      * @return {Node} last child node
      */
     public get lastChild() {
         return arr_back(this.childNodes);
+    }
+
+    /**
+     * Get last child element
+     * @return {Node} last child element
+     */
+    public get lastElementChild() {
+        return this.childNodes.reverse().find((node) => node.nodeType === NodeType.ELEMENT_NODE);
     }
 
     /**

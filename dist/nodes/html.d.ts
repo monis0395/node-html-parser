@@ -170,10 +170,20 @@ export default class HTMLElement extends Node {
      */
     get firstChild(): Node;
     /**
+     * Get first child element
+     * @return {Node} first child element
+     */
+    get firstElementChild(): Node;
+    /**
      * Get last child node
      * @return {Node} last child node
      */
     get lastChild(): Node;
+    /**
+     * Get last child element
+     * @return {Node} last child element
+     */
+    get lastElementChild(): Node;
     /**
      * Get attributes
      * @return {Object} parsed and unescaped attributes
