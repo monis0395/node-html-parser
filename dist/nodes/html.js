@@ -67,7 +67,6 @@ var HTMLElement = /** @class */ (function (_super) {
          * Node Type declaration.
          */
         _this.nodeType = type_1.default.ELEMENT_NODE;
-        _this.tagName = _this.tagName.toUpperCase();
         _this.rawAttrs = rawAttrs || '';
         _this.parentNode = parentNode || null;
         _this.childNodes = [];
@@ -429,7 +428,19 @@ var HTMLElement = /** @class */ (function (_super) {
      * @return {HTMLElement[]} matching elements
      */
     HTMLElement.prototype.getElementsByTagName = function (tagName) {
-        return this.querySelectorAll(tagName.toUpperCase());
+        var result = this.querySelectorAll(tagName);
+        if (result.length > 0) {
+            return result;
+        }
+        result = this.querySelectorAll(tagName.toUpperCase());
+        if (result.length > 0) {
+            return result;
+        }
+        result = this.querySelectorAll(tagName.toLowerCase());
+        if (result.length > 0) {
+            return result;
+        }
+        return result;
     };
     /**
      * Get Elements whose class property matches the specified string.
@@ -848,6 +859,9 @@ function parse(data, options) {
         }
         if (options.lowerCaseTagName) {
             match[2] = match[2].toLowerCase();
+        }
+        if (options.upperCaseTagName) {
+            match[2] = match[2].toUpperCase();
         }
         if (!match[1]) {
             // not </ tags

@@ -64,7 +64,6 @@ export default class HTMLElement extends Node {
      */
     public constructor(public tagName: string, keyAttrs: KeyAttributes, private rawAttrs = '', public parentNode = null as Node) {
         super();
-        this.tagName = this.tagName.toUpperCase();
         this.rawAttrs = rawAttrs || '';
         this.parentNode = parentNode || null;
         this.childNodes = [];
@@ -384,7 +383,19 @@ export default class HTMLElement extends Node {
      * @return {HTMLElement[]} matching elements
      */
     public getElementsByTagName(tagName: string): HTMLElement[] {
-        return this.querySelectorAll(tagName.toUpperCase());
+        let result = this.querySelectorAll(tagName);
+        if (result.length > 0) {
+            return result;
+        }
+        result = this.querySelectorAll(tagName.toUpperCase());
+        if (result.length > 0) {
+            return result;
+        }
+        result = this.querySelectorAll(tagName.toLowerCase());
+        if (result.length > 0) {
+            return result;
+        }
+        return result;
     }
 
     /**
@@ -751,6 +762,7 @@ const kBlockTextElements = {
 
 export interface Options {
     lowerCaseTagName?: boolean;
+    upperCaseTagName?: boolean;
     noFix?: boolean;
     script?: boolean;
     style?: boolean;
@@ -797,6 +809,9 @@ export function parse(data: string, options = {} as Options) {
         }
         if (options.lowerCaseTagName) {
             match[2] = match[2].toLowerCase();
+        }
+        if (options.upperCaseTagName) {
+            match[2] = match[2].toUpperCase();
         }
         if (!match[1]) {
             // not </ tags
