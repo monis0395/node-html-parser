@@ -55,8 +55,8 @@ var Node = /** @class */ (function () {
         this.childNodes = this.childNodes.filter(function (child) {
             return (child !== node);
         });
-        var previousSibling = node.previousSibling;
-        var nextSibling = node.nextSibling;
+        var previousSibling = node.previousSibling || null;
+        var nextSibling = node.nextSibling || null;
         if (previousSibling) {
             previousSibling.nextSibling = nextSibling;
         }
@@ -73,8 +73,10 @@ var Node = /** @class */ (function () {
         if (node.parentNode) {
             node.parentNode.removeChild(node);
         }
-        var lastNode = this.childNodes[this.childNodes.length - 1];
-        lastNode.nextSibling = node;
+        var lastNode = this.childNodes[this.childNodes.length - 1] || null;
+        if (lastNode) {
+            lastNode.nextSibling = node;
+        }
         node.previousSibling = lastNode;
         node.nextSibling = null;
         this.childNodes.push(node);
@@ -95,8 +97,8 @@ var Node = /** @class */ (function () {
             }
         }
         this.childNodes[idx] = newNode;
-        var previousSibling = oldNode.previousSibling;
-        var nextSibling = oldNode.nextSibling;
+        var previousSibling = oldNode.previousSibling || null;
+        var nextSibling = oldNode.nextSibling || null;
         newNode.previousSibling = previousSibling;
         newNode.nextSibling = nextSibling;
         if (previousSibling) {

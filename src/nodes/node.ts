@@ -51,8 +51,8 @@ export default abstract class Node {
             return (child !== node);
         });
 
-        const previousSibling = node.previousSibling;
-        const nextSibling = node.nextSibling;
+        const previousSibling = node.previousSibling || null;
+        const nextSibling = node.nextSibling || null;
         if (previousSibling) {
             previousSibling.nextSibling = nextSibling;
         }
@@ -70,8 +70,10 @@ export default abstract class Node {
         if (node.parentNode) {
             node.parentNode.removeChild(node);
         }
-        const lastNode = this.childNodes[this.childNodes.length - 1];
-        lastNode.nextSibling = node;
+        const lastNode = this.childNodes[this.childNodes.length - 1] || null;
+        if (lastNode) {
+            lastNode.nextSibling = node;
+        }
         node.previousSibling = lastNode;
         node.nextSibling = null;
 
@@ -96,8 +98,8 @@ export default abstract class Node {
         }
         this.childNodes[idx] = newNode;
 
-        const previousSibling = oldNode.previousSibling;
-        const nextSibling = oldNode.nextSibling;
+        const previousSibling = oldNode.previousSibling || null;
+        const nextSibling = oldNode.nextSibling || null;
 
         newNode.previousSibling = previousSibling;
         newNode.nextSibling = nextSibling;
