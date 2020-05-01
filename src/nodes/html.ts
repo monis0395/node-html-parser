@@ -67,7 +67,7 @@ export default class HTMLElement extends Node {
         super();
         this.rawAttrs = rawAttrs || '';
         this.parentNode = parentNode || null;
-        if (this.parentNode.nodeType === NodeType.ELEMENT_NODE) {
+        if (this.parentNode && this.parentNode.nodeType === NodeType.ELEMENT_NODE) {
             this.parentElement = this.parentNode as HTMLElement;
         }
         this.childNodes = [];

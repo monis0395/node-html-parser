@@ -70,7 +70,7 @@ var HTMLElement = /** @class */ (function (_super) {
         _this.nodeType = type_1.default.ELEMENT_NODE;
         _this.rawAttrs = rawAttrs || '';
         _this.parentNode = parentNode || null;
-        if (_this.parentNode.nodeType === type_1.default.ELEMENT_NODE) {
+        if (_this.parentNode && _this.parentNode.nodeType === type_1.default.ELEMENT_NODE) {
             _this.parentElement = _this.parentNode;
         }
         _this.childNodes = [];

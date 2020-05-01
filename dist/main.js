@@ -701,7 +701,7 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
             _this.nodeType = type_3.default.ELEMENT_NODE;
             _this.rawAttrs = rawAttrs || '';
             _this.parentNode = parentNode || null;
-            if (_this.parentNode.nodeType === type_3.default.ELEMENT_NODE) {
+            if (_this.parentNode && _this.parentNode.nodeType === type_3.default.ELEMENT_NODE) {
                 _this.parentElement = _this.parentNode;
             }
             _this.childNodes = [];
