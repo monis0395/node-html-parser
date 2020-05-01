@@ -30,14 +30,6 @@ module.exports = {
 		"@typescript-eslint/ban-types": "error",
 		"@typescript-eslint/class-name-casing": "error",
 		"@typescript-eslint/consistent-type-assertions": "error",
-		"@typescript-eslint/indent": [
-			"error",
-			"tab",
-			{
-				"ArrayExpression": "first",
-				"ObjectExpression": "first"
-			}
-		],
 		"@typescript-eslint/interface-name-prefix": "off",
 		"@typescript-eslint/no-empty-function": "off",
 		"@typescript-eslint/no-empty-interface": "error",
@@ -60,7 +52,6 @@ module.exports = {
 		"@typescript-eslint/triple-slash-reference": "error",
 		"@typescript-eslint/unified-signatures": "off",
 		"camelcase": "off",
-		"comma-dangle": "error",
 		"complexity": "off",
 		"constructor-super": "error",
 		"dot-notation": "error",
@@ -129,7 +120,7 @@ module.exports = {
 				"rules": {
 					"jsdoc-format": true,
 					"no-reference-import": true,
-					"no-unsafe-any": true,
+					"no-unsafe-any": false,
 					"whitespace": [
 						true,
 						"check-branch",

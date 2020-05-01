@@ -26,6 +26,14 @@ export default class TextNode extends Node {
 	}
 
 	/**
+	 * Get unescaped text value of current node and its children.
+	 * @return {string} text content
+	 */
+	get textContent() {
+		return this.text;
+	}
+
+	/**
 	 * Detect if the node contains only white space.
 	 * @return {bool}
 	 */
