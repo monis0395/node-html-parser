@@ -58,6 +58,7 @@ export default class HTMLElement extends Node {
     get localName(): string;
     get title(): string;
     get documentElement(): HTMLElement;
+    get ownerDocument(): this;
     get head(): HTMLElement;
     get body(): HTMLElement;
     /**

@@ -141,6 +141,11 @@ export default class HTMLElement extends Node {
         return this.getElementsByTagName('html')[0];
     }
 
+    public get ownerDocument() {
+        //todo: fix later
+        return this;
+    }
+
     public get head() {
         return this.getElementsByTagName('head')[0];
     }

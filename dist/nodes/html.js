@@ -157,6 +157,13 @@ var HTMLElement = /** @class */ (function (_super) {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(HTMLElement.prototype, "ownerDocument", {
+        get: function () {
+            return this;
+        },
+        enumerable: false,
+        configurable: true
+    });
     Object.defineProperty(HTMLElement.prototype, "head", {
         get: function () {
             return this.getElementsByTagName('head')[0];

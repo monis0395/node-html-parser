@@ -974,6 +974,13 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
             enumerable: false,
             configurable: true
         });
+        Object.defineProperty(HTMLElement.prototype, "ownerDocument", {
+            get: function () {
+                return this;
+            },
+            enumerable: false,
+            configurable: true
+        });
         Object.defineProperty(HTMLElement.prototype, "head", {
             get: function () {
                 return this.getElementsByTagName('head')[0];
