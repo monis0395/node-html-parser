@@ -64,6 +64,7 @@ export default class HTMLElement extends Node {
      */
     public constructor(public tagName: string, keyAttrs: KeyAttributes, private rawAttrs = '', public parentNode = null as Node) {
         super();
+        this.tagName = this.tagName.toUpperCase();
         this.rawAttrs = rawAttrs || '';
         this.parentNode = parentNode || null;
         this.childNodes = [];
@@ -383,7 +384,7 @@ export default class HTMLElement extends Node {
      * @return {HTMLElement[]} matching elements
      */
     public getElementsByTagName(tagName: string): HTMLElement[] {
-        return this.querySelectorAll(tagName);
+        return this.querySelectorAll(tagName.toUpperCase());
     }
 
     /**

@@ -698,6 +698,7 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
              * Node Type declaration.
              */
             _this.nodeType = type_3.default.ELEMENT_NODE;
+            _this.tagName = _this.tagName.toUpperCase();
             _this.rawAttrs = rawAttrs || '';
             _this.parentNode = parentNode || null;
             _this.childNodes = [];
@@ -1059,7 +1060,7 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
          * @return {HTMLElement[]} matching elements
          */
         HTMLElement.prototype.getElementsByTagName = function (tagName) {
-            return this.querySelectorAll(tagName);
+            return this.querySelectorAll(tagName.toUpperCase());
         };
         /**
          * Get Elements whose class property matches the specified string.

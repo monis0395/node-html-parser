@@ -67,6 +67,7 @@ var HTMLElement = /** @class */ (function (_super) {
          * Node Type declaration.
          */
         _this.nodeType = type_1.default.ELEMENT_NODE;
+        _this.tagName = _this.tagName.toUpperCase();
         _this.rawAttrs = rawAttrs || '';
         _this.parentNode = parentNode || null;
         _this.childNodes = [];
@@ -428,7 +429,7 @@ var HTMLElement = /** @class */ (function (_super) {
      * @return {HTMLElement[]} matching elements
      */
     HTMLElement.prototype.getElementsByTagName = function (tagName) {
-        return this.querySelectorAll(tagName);
+        return this.querySelectorAll(tagName.toUpperCase());
     };
     /**
      * Get Elements whose class property matches the specified string.
