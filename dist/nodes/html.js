@@ -307,6 +307,9 @@ var HTMLElement = /** @class */ (function (_super) {
                 return child.toString();
             }).join('');
         },
+        set: function (html) {
+            this.set_content(html);
+        },
         enumerable: false,
         configurable: true
     });

@@ -268,6 +268,10 @@ export default class HTMLElement extends Node {
         }).join('');
     }
 
+    public set innerHTML(html) {
+        this.set_content(html);
+    }
+
     public set_content(content: string | Node | Node[], options = {} as Options) {
         if (content instanceof Node) {
             content = [content];

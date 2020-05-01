@@ -248,7 +248,7 @@ for (const jsName in styleMap) {
         set(value): void {
             this.setStyle(cssName, value);
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true,
     });
 }

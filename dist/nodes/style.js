@@ -240,7 +240,7 @@ var _loop_1 = function (jsName) {
         set: function (value) {
             this.setStyle(cssName, value);
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true,
     });
 };

@@ -97,6 +97,7 @@ export default class HTMLElement extends Node {
     get structuredText(): string;
     toString(): string;
     get innerHTML(): string;
+    set innerHTML(html: string);
     set_content(content: string | Node | Node[], options?: Options): void;
     /**
      * Creates a new Text node.

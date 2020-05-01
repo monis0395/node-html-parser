@@ -636,7 +636,7 @@ define("nodes/style", ["require", "exports"], function (require, exports) {
             set: function (value) {
                 this.setStyle(cssName, value);
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true,
         });
     };
@@ -937,6 +937,9 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
                 return this.childNodes.map(function (child) {
                     return child.toString();
                 }).join('');
+            },
+            set: function (html) {
+                this.set_content(html);
             },
             enumerable: false,
             configurable: true
