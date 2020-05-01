@@ -773,15 +773,6 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
             return _this;
         }
         /**
-         * Remove Child element from childNodes array
-         * @param {HTMLElement} node     node to remove
-         */
-        HTMLElement.prototype.removeChild = function (node) {
-            this.childNodes = this.childNodes.filter(function (child) {
-                return (child !== node);
-            });
-        };
-        /**
          * Exchanges given child with new child
          * @param {HTMLElement} oldNode     node to exchange
          * @param {HTMLElement} newNode     new node
@@ -1225,22 +1216,6 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
                 }
             }
             return null;
-        };
-        /**
-         * Append a child node to childNodes
-         * @param  {Node} node node to append
-         * @return {Node}      node appended
-         */
-        HTMLElement.prototype.appendChild = function (node) {
-            // node.parentNode = this;
-            this.childNodes.push(node);
-            if (node instanceof HTMLElement) {
-                if (node.parentElement) {
-                    node.parentElement.removeChild(node);
-                }
-                node.parentNode = this;
-            }
-            return node;
         };
         Object.defineProperty(HTMLElement.prototype, "firstElementChild", {
             /**

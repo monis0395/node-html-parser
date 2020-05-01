@@ -81,16 +81,6 @@ export default class HTMLElement extends Node {
     }
 
     /**
-     * Remove Child element from childNodes array
-     * @param {HTMLElement} node     node to remove
-     */
-    public removeChild(node: Node) {
-        this.childNodes = this.childNodes.filter((child) => {
-            return (child !== node);
-        });
-    }
-
-    /**
      * Exchanges given child with new child
      * @param {HTMLElement} oldNode     node to exchange
      * @param {HTMLElement} newNode     new node
@@ -505,23 +495,6 @@ export default class HTMLElement extends Node {
             }
         }
         return null;
-    }
-
-    /**
-     * Append a child node to childNodes
-     * @param  {Node} node node to append
-     * @return {Node}      node appended
-     */
-    public appendChild<T extends Node = Node>(node: T) {
-        // node.parentNode = this;
-        this.childNodes.push(node);
-        if (node instanceof HTMLElement) {
-            if (node.parentElement) {
-                node.parentElement.removeChild(node);
-            }
-            node.parentNode = this;
-        }
-        return node;
     }
 
     /**

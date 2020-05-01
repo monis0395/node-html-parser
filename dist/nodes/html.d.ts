@@ -46,11 +46,6 @@ export default class HTMLElement extends Node {
      */
     constructor(tagName: string, keyAttrs: KeyAttributes, rawAttrs?: string, parentNode?: Node);
     /**
-     * Remove Child element from childNodes array
-     * @param {HTMLElement} node     node to remove
-     */
-    removeChild(node: Node): void;
-    /**
      * Exchanges given child with new child
      * @param {HTMLElement} oldNode     node to exchange
      * @param {HTMLElement} newNode     new node
@@ -144,12 +139,6 @@ export default class HTMLElement extends Node {
      * @return {HTMLElement}    matching node
      */
     querySelector(selector: string | Matcher): HTMLElement;
-    /**
-     * Append a child node to childNodes
-     * @param  {Node} node node to append
-     * @return {Node}      node appended
-     */
-    appendChild<T extends Node = Node>(node: T): T;
     /**
      * Get first child element
      * @return {Node} first child element
