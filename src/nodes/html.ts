@@ -142,7 +142,7 @@ export default class HTMLElement extends Node {
     }
 
     public get ownerDocument() {
-        //todo: fix later
+        // todo: fix later
         return this;
     }
 

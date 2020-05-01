@@ -42,7 +42,7 @@ export default abstract class Node {
      * @return {Node} first child node
      */
     public get firstChild() {
-        return this.childNodes[0];
+        return this.childNodes[0] || null;
     }
 
     /**
@@ -50,7 +50,7 @@ export default abstract class Node {
      * @return {Node} last child node
      */
     public get lastChild() {
-        return arr_back(this.childNodes);
+        return arr_back(this.childNodes) || null;
     }
 
     /**
@@ -58,7 +58,7 @@ export default abstract class Node {
      * @return {Node} first child element
      */
     public get firstElementChild() {
-        return this.childNodes.find((node) => node.nodeType === NodeType.ELEMENT_NODE);
+        return this.childNodes.find((node) => node.nodeType === NodeType.ELEMENT_NODE) || null;
     }
 
     /**
@@ -73,7 +73,7 @@ export default abstract class Node {
                 break;
             }
         }
-        return this.childNodes[idx];
+        return this.childNodes[idx] || null;
     }
 
     /**

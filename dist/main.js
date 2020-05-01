@@ -79,7 +79,7 @@ define("nodes/node", ["require", "exports", "nodes/type", "back", "he"], functio
              * @return {Node} first child node
              */
             get: function () {
-                return this.childNodes[0];
+                return this.childNodes[0] || null;
             },
             enumerable: false,
             configurable: true
@@ -90,7 +90,7 @@ define("nodes/node", ["require", "exports", "nodes/type", "back", "he"], functio
              * @return {Node} last child node
              */
             get: function () {
-                return back_1.default(this.childNodes);
+                return back_1.default(this.childNodes) || null;
             },
             enumerable: false,
             configurable: true
@@ -101,7 +101,7 @@ define("nodes/node", ["require", "exports", "nodes/type", "back", "he"], functio
              * @return {Node} first child element
              */
             get: function () {
-                return this.childNodes.find(function (node) { return node.nodeType === type_1.default.ELEMENT_NODE; });
+                return this.childNodes.find(function (node) { return node.nodeType === type_1.default.ELEMENT_NODE; }) || null;
             },
             enumerable: false,
             configurable: true
@@ -119,7 +119,7 @@ define("nodes/node", ["require", "exports", "nodes/type", "back", "he"], functio
                         break;
                     }
                 }
-                return this.childNodes[idx];
+                return this.childNodes[idx] || null;
             },
             enumerable: false,
             configurable: true
@@ -976,6 +976,7 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
         });
         Object.defineProperty(HTMLElement.prototype, "ownerDocument", {
             get: function () {
+                // todo: fix later
                 return this;
             },
             enumerable: false,

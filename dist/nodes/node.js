@@ -47,7 +47,7 @@ var Node = /** @class */ (function () {
          * @return {Node} first child node
          */
         get: function () {
-            return this.childNodes[0];
+            return this.childNodes[0] || null;
         },
         enumerable: false,
         configurable: true
@@ -58,7 +58,7 @@ var Node = /** @class */ (function () {
          * @return {Node} last child node
          */
         get: function () {
-            return back_1.default(this.childNodes);
+            return back_1.default(this.childNodes) || null;
         },
         enumerable: false,
         configurable: true
@@ -69,7 +69,7 @@ var Node = /** @class */ (function () {
          * @return {Node} first child element
          */
         get: function () {
-            return this.childNodes.find(function (node) { return node.nodeType === type_1.default.ELEMENT_NODE; });
+            return this.childNodes.find(function (node) { return node.nodeType === type_1.default.ELEMENT_NODE; }) || null;
         },
         enumerable: false,
         configurable: true
@@ -87,7 +87,7 @@ var Node = /** @class */ (function () {
                     break;
                 }
             }
-            return this.childNodes[idx];
+            return this.childNodes[idx] || null;
         },
         enumerable: false,
         configurable: true

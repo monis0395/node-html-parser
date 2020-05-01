@@ -159,6 +159,7 @@ var HTMLElement = /** @class */ (function (_super) {
     });
     Object.defineProperty(HTMLElement.prototype, "ownerDocument", {
         get: function () {
+            // todo: fix later
             return this;
         },
         enumerable: false,
