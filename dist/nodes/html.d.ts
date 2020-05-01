@@ -32,6 +32,7 @@ export default class HTMLElement extends Node {
     _id: string;
     classNames: string[];
     style: Style;
+    parentElement: HTMLElement;
     /**
      * Node Type declaration.
      */

@@ -63,12 +63,16 @@ var HTMLElement = /** @class */ (function (_super) {
         _this.rawAttrs = rawAttrs;
         _this.parentNode = parentNode;
         _this.classNames = [];
+        _this.parentElement = null;
         /**
          * Node Type declaration.
          */
         _this.nodeType = type_1.default.ELEMENT_NODE;
         _this.rawAttrs = rawAttrs || '';
         _this.parentNode = parentNode || null;
+        if (_this.parentNode.nodeType === type_1.default.ELEMENT_NODE) {
+            _this.parentElement = _this.parentNode;
+        }
         _this.childNodes = [];
         if (keyAttrs.id) {
             _this.id = keyAttrs.id;
@@ -577,6 +581,9 @@ var HTMLElement = /** @class */ (function (_super) {
         // node.parentNode = this;
         this.childNodes.push(node);
         if (node instanceof HTMLElement) {
+            if (node.parentElement) {
+                node.parentElement.removeChild(node);
+            }
             node.parentNode = this;
         }
         return node;

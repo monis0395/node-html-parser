@@ -50,6 +50,7 @@ export default class HTMLElement extends Node {
     public _id: string;
     public classNames = [] as string[];
     public style: Style;
+    public parentElement: HTMLElement = null;
     /**
      * Node Type declaration.
      */
@@ -66,6 +67,9 @@ export default class HTMLElement extends Node {
         super();
         this.rawAttrs = rawAttrs || '';
         this.parentNode = parentNode || null;
+        if (this.parentNode.nodeType === NodeType.ELEMENT_NODE) {
+            this.parentElement = this.parentNode as HTMLElement;
+        }
         this.childNodes = [];
         if (keyAttrs.id) {
             this.id = keyAttrs.id;
@@ -538,6 +542,9 @@ export default class HTMLElement extends Node {
         // node.parentNode = this;
         this.childNodes.push(node);
         if (node instanceof HTMLElement) {
+            if (node.parentElement) {
+                node.parentElement.removeChild(node);
+            }
             node.parentNode = this;
         }
         return node;
