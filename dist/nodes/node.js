@@ -135,6 +135,9 @@ var Node = /** @class */ (function () {
         if (lastElement && node.nodeType === type_1.default.ELEMENT_NODE) {
             lastElement.nextElementSibling = node;
         }
+        if (lastNode && node.nodeType === type_1.default.ELEMENT_NODE) {
+            lastNode.nextElementSibling = node;
+        }
         node.previousElementSibling = lastElement;
         node.nextElementSibling = null;
         this.childNodes.push(node);
@@ -169,11 +172,19 @@ var Node = /** @class */ (function () {
         var nextElementSibling = oldNode.nextElementSibling || null;
         newNode.previousElementSibling = previousElementSibling;
         newNode.nextElementSibling = nextElementSibling;
-        if (previousElementSibling && newNode.nodeType === type_1.default.ELEMENT_NODE) {
-            previousSibling.nextElementSibling = newNode;
-        }
-        if (nextSibling && newNode.nodeType === type_1.default.ELEMENT_NODE) {
-            nextSibling.previousElementSibling = newNode;
+        if (newNode.nodeType === type_1.default.ELEMENT_NODE) {
+            if (previousSibling) {
+                previousSibling.nextElementSibling = newNode;
+            }
+            if (nextSibling) {
+                nextSibling.previousElementSibling = newNode;
+            }
+            if (previousElementSibling) {
+                previousElementSibling.nextElementSibling = newNode;
+            }
+            if (nextSibling) {
+                nextSibling.previousElementSibling = newNode;
+            }
         }
     };
     /**

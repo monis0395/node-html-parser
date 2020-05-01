@@ -50,26 +50,25 @@ var HTMLElement = /** @class */ (function (_super) {
     __extends(HTMLElement, _super);
     /**
      * Creates an instance of HTMLElement.
+     * @param tagName       tag name of node
      * @param keyAttrs      id and class attribute
-     * @param [rawAttrs]    attributes in string
+     * @param rawAttrs      attributes in string
+     * @param parentNode    parent of current element
      *
      * @memberof HTMLElement
      */
     function HTMLElement(tagName, keyAttrs, rawAttrs, parentNode) {
-        if (rawAttrs === void 0) { rawAttrs = ''; }
-        if (parentNode === void 0) { parentNode = null; }
         var _this = _super.call(this) || this;
-        _this.tagName = tagName;
-        _this.rawAttrs = rawAttrs;
-        _this.parentNode = parentNode;
         _this.classNames = [];
         _this.parentElement = null;
+        _this.parentNode = null;
         /**
          * Node Type declaration.
          */
         _this.nodeType = type_1.default.ELEMENT_NODE;
         _this.rawAttrs = rawAttrs || '';
         _this.parentNode = parentNode || null;
+        _this.tagName = tagName || '';
         if (_this.parentNode && _this.parentNode.nodeType === type_1.default.ELEMENT_NODE) {
             _this.parentElement = _this.parentNode;
         }

@@ -24,23 +24,25 @@ export declare type InsertPosition = 'beforebegin' | 'afterbegin' | 'beforeend' 
  * @extends {Node}
  */
 export default class HTMLElement extends Node {
-    tagName: string;
-    private rawAttrs;
-    parentNode: Node;
     private _attrs;
     private _rawAttrs;
+    private rawAttrs;
     _id: string;
     classNames: string[];
     style: Style;
     parentElement: HTMLElement;
+    parentNode: Node;
+    tagName: string;
     /**
      * Node Type declaration.
      */
     nodeType: NodeType;
     /**
      * Creates an instance of HTMLElement.
+     * @param tagName       tag name of node
      * @param keyAttrs      id and class attribute
-     * @param [rawAttrs]    attributes in string
+     * @param rawAttrs      attributes in string
+     * @param parentNode    parent of current element
      *
      * @memberof HTMLElement
      */

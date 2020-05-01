@@ -123,6 +123,9 @@ export default abstract class Node {
         if (lastElement && node.nodeType === NodeType.ELEMENT_NODE) {
             lastElement.nextElementSibling = node;
         }
+        if (lastNode && node.nodeType === NodeType.ELEMENT_NODE) {
+            lastNode.nextElementSibling = node;
+        }
         node.previousElementSibling = lastElement;
         node.nextElementSibling = null;
 
@@ -165,12 +168,19 @@ export default abstract class Node {
 
         newNode.previousElementSibling = previousElementSibling;
         newNode.nextElementSibling = nextElementSibling;
-
-        if (previousElementSibling && newNode.nodeType === NodeType.ELEMENT_NODE) {
-            previousSibling.nextElementSibling = newNode;
-        }
-        if (nextSibling && newNode.nodeType === NodeType.ELEMENT_NODE) {
-            nextSibling.previousElementSibling = newNode;
+        if (newNode.nodeType === NodeType.ELEMENT_NODE) {
+            if (previousSibling) {
+                previousSibling.nextElementSibling = newNode;
+            }
+            if (nextSibling) {
+                nextSibling.previousElementSibling = newNode;
+            }
+            if (previousElementSibling) {
+                previousElementSibling.nextElementSibling = newNode;
+            }
+            if (nextSibling) {
+                nextSibling.previousElementSibling = newNode;
+            }
         }
     }
 

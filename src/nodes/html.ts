@@ -47,10 +47,13 @@ const kBlockElements = {
 export default class HTMLElement extends Node {
     private _attrs: Attributes;
     private _rawAttrs: RawAttributes;
+    private rawAttrs: string;
     public _id: string;
     public classNames = [] as string[];
     public style: Style;
     public parentElement: HTMLElement = null;
+    public parentNode: Node = null;
+    public tagName: string;
     /**
      * Node Type declaration.
      */
@@ -58,15 +61,18 @@ export default class HTMLElement extends Node {
 
     /**
      * Creates an instance of HTMLElement.
+     * @param tagName       tag name of node
      * @param keyAttrs      id and class attribute
-     * @param [rawAttrs]    attributes in string
+     * @param rawAttrs      attributes in string
+     * @param parentNode    parent of current element
      *
      * @memberof HTMLElement
      */
-    public constructor(public tagName: string, keyAttrs: KeyAttributes, private rawAttrs = '', public parentNode = null as Node) {
+    public constructor(tagName: string, keyAttrs: KeyAttributes, rawAttrs?: string, parentNode?: Node) {
         super();
         this.rawAttrs = rawAttrs || '';
         this.parentNode = parentNode || null;
+        this.tagName = tagName || '';
         if (this.parentNode && this.parentNode.nodeType === NodeType.ELEMENT_NODE) {
             this.parentElement = this.parentNode as HTMLElement;
         }

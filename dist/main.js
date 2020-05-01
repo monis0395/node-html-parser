@@ -167,6 +167,9 @@ define("nodes/node", ["require", "exports", "nodes/type", "back", "he"], functio
             if (lastElement && node.nodeType === type_1.default.ELEMENT_NODE) {
                 lastElement.nextElementSibling = node;
             }
+            if (lastNode && node.nodeType === type_1.default.ELEMENT_NODE) {
+                lastNode.nextElementSibling = node;
+            }
             node.previousElementSibling = lastElement;
             node.nextElementSibling = null;
             this.childNodes.push(node);
@@ -201,11 +204,19 @@ define("nodes/node", ["require", "exports", "nodes/type", "back", "he"], functio
             var nextElementSibling = oldNode.nextElementSibling || null;
             newNode.previousElementSibling = previousElementSibling;
             newNode.nextElementSibling = nextElementSibling;
-            if (previousElementSibling && newNode.nodeType === type_1.default.ELEMENT_NODE) {
-                previousSibling.nextElementSibling = newNode;
-            }
-            if (nextSibling && newNode.nodeType === type_1.default.ELEMENT_NODE) {
-                nextSibling.previousElementSibling = newNode;
+            if (newNode.nodeType === type_1.default.ELEMENT_NODE) {
+                if (previousSibling) {
+                    previousSibling.nextElementSibling = newNode;
+                }
+                if (nextSibling) {
+                    nextSibling.previousElementSibling = newNode;
+                }
+                if (previousElementSibling) {
+                    previousElementSibling.nextElementSibling = newNode;
+                }
+                if (nextSibling) {
+                    nextSibling.previousElementSibling = newNode;
+                }
             }
         };
         /**
@@ -855,26 +866,25 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
         __extends(HTMLElement, _super);
         /**
          * Creates an instance of HTMLElement.
+         * @param tagName       tag name of node
          * @param keyAttrs      id and class attribute
-         * @param [rawAttrs]    attributes in string
+         * @param rawAttrs      attributes in string
+         * @param parentNode    parent of current element
          *
          * @memberof HTMLElement
          */
         function HTMLElement(tagName, keyAttrs, rawAttrs, parentNode) {
-            if (rawAttrs === void 0) { rawAttrs = ''; }
-            if (parentNode === void 0) { parentNode = null; }
             var _this = _super.call(this) || this;
-            _this.tagName = tagName;
-            _this.rawAttrs = rawAttrs;
-            _this.parentNode = parentNode;
             _this.classNames = [];
             _this.parentElement = null;
+            _this.parentNode = null;
             /**
              * Node Type declaration.
              */
             _this.nodeType = type_4.default.ELEMENT_NODE;
             _this.rawAttrs = rawAttrs || '';
             _this.parentNode = parentNode || null;
+            _this.tagName = tagName || '';
             if (_this.parentNode && _this.parentNode.nodeType === type_4.default.ELEMENT_NODE) {
                 _this.parentElement = _this.parentNode;
             }
