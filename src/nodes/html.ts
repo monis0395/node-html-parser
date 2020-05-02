@@ -673,7 +673,7 @@ export function parse(data: string, options = {} as Options) {
 			if (lastTextPos + match[0].length < kMarkupPattern.lastIndex) {
 				// if has content
 				const text = data.substring(lastTextPos, kMarkupPattern.lastIndex - match[0].length);
-				currentParent.appendChild(new TextNode(text, currentParent, root));
+				currentParent.appendChild(new TextNode(text, null, root));
 			}
 		}
 		lastTextPos = kMarkupPattern.lastIndex;
@@ -685,7 +685,7 @@ export function parse(data: string, options = {} as Options) {
 			if (options.comment) {
 				// Only keep what is in between <!-- and -->
 				const text = data.substring(lastTextPos - 3, lastTextPos - match[0].length + 4);
-				currentParent.appendChild(new CommentNode(text, currentParent, root));
+				currentParent.appendChild(new CommentNode(text, null, root));
 			}
 			continue;
 		}
@@ -714,7 +714,7 @@ export function parse(data: string, options = {} as Options) {
 			}
 			// ignore container tag we add above
 			// https://github.com/taoqf/node-html-parser/issues/38
-			currentParent = currentParent.appendChild(new HTMLElement(match[2], attrs, match[3], currentParent, root, options));
+			currentParent = currentParent.appendChild(new HTMLElement(match[2], attrs, match[3], null, root, options));
 			stack.push(currentParent);
 
 			let kBlockKey = match[2];
@@ -742,7 +742,7 @@ export function parse(data: string, options = {} as Options) {
 						text = data.substring(kMarkupPattern.lastIndex, index);
 					}
 					if (text.length > 0) {
-						currentParent.appendChild(new TextNode(text, currentParent, root));
+						currentParent.appendChild(new TextNode(text, null, root));
 					}
 				}
 				if (index === -1) {
