@@ -538,7 +538,7 @@ var HTMLElement = /** @class */ (function (_super) {
                 return this._rawAttrs;
             var attrs = {};
             if (this.rawAttrs) {
-                var re = /\b([a-z][a-z0-9\-]*)(?:\s*=\s*(?:'([^']*)'|'([^']*)'|(\S+)))?/ig;
+                var re = /\b([a-z][a-z0-9\-]*)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|(\S+)))?/ig;
                 var match = void 0;
                 while (match = re.exec(this.rawAttrs)) {
                     attrs[match[1]] = match[2] || match[3] || match[4] || null;
@@ -662,7 +662,7 @@ var HTMLElement = /** @class */ (function (_super) {
 exports.default = HTMLElement;
 // https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name
 var kMarkupPattern = /<!--[^]*?(?=-->)-->|<(\/?)([a-z][-.:0-9_a-z]*)\s*([^>]*?)(\/?)>/ig;
-var kAttributePattern = /(^|\s)(id|class)\s*=\s*('([^']+)'|'([^']+)'|(\S+))/ig;
+var kAttributePattern = /(^|\s)(id|class)\s*=\s*("([^"]+)"|'([^']+)'|(\S+))/ig;
 var kSelfClosingElements = {
     area: true,
     base: true,

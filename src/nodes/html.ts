@@ -504,7 +504,7 @@ export default class HTMLElement extends Node {
             return this._rawAttrs;
         const attrs = {} as RawAttributes;
         if (this.rawAttrs) {
-            const re = /\b([a-z][a-z0-9\-]*)(?:\s*=\s*(?:'([^']*)'|'([^']*)'|(\S+)))?/ig;
+			const re = /\b([a-z][a-z0-9\-]*)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|(\S+)))?/ig;
             let match: RegExpExecArray;
             while (match = re.exec(this.rawAttrs)) {
                 attrs[match[1]] = match[2] || match[3] || match[4] || null;
@@ -621,7 +621,7 @@ export default class HTMLElement extends Node {
 
 // https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name
 const kMarkupPattern = /<!--[^]*?(?=-->)-->|<(\/?)([a-z][-.:0-9_a-z]*)\s*([^>]*?)(\/?)>/ig;
-const kAttributePattern = /(^|\s)(id|class)\s*=\s*('([^']+)'|'([^']+)'|(\S+))/ig;
+const kAttributePattern = /(^|\s)(id|class)\s*=\s*("([^"]+)"|'([^']+)'|(\S+))/ig;
 const kSelfClosingElements = {
     area: true,
     base: true,
