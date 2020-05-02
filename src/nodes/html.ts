@@ -5,7 +5,7 @@ import CommentNode from './comment';
 import Matcher from '../matcher';
 import arr_back from '../back';
 import Style from './style';
-import { decode as decodeHTML } from 'he';
+import { decodeHTML } from 'entities';
 import { Options } from './options';
 import Document from './document';
 import { fixRelativeUris } from './fixes';

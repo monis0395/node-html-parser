@@ -909,7 +909,7 @@ define("nodes/fixes", ["require", "exports", "url"], function (require, exports,
     }
     exports.fixRelativeUris = fixRelativeUris;
 });
-define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/text", "nodes/comment", "matcher", "back", "nodes/style", "he", "nodes/document", "nodes/fixes"], function (require, exports, node_3, type_3, text_2, comment_1, matcher_2, back_2, style_1, he_1, document_1, fixes_1) {
+define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/text", "nodes/comment", "matcher", "back", "nodes/style", "entities", "nodes/document", "nodes/fixes"], function (require, exports, node_3, type_3, text_2, comment_1, matcher_2, back_2, style_1, entities_1, document_1, fixes_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.parse = void 0;
@@ -1011,7 +1011,7 @@ define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/t
              * @return {string} text content
              */
             get: function () {
-                return he_1.decode(this.rawText);
+                return entities_1.decodeHTML(this.rawText);
             },
             enumerable: false,
             configurable: true
@@ -1404,7 +1404,7 @@ define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/t
                 var attrs = this.rawAttributes;
                 for (var key in attrs) {
                     var val = attrs[key] || '';
-                    this._attrs[key] = he_1.decode(val);
+                    this._attrs[key] = entities_1.decodeHTML(val);
                 }
                 return this._attrs;
             },
@@ -1473,7 +1473,7 @@ define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/t
             var attrs = this.rawAttributes;
             attrs[key] = String(value);
             if (this._attrs) {
-                this._attrs[key] = he_1.decode(attrs[key]);
+                this._attrs[key] = entities_1.decodeHTML(attrs[key]);
             }
             // Update rawString
             this.rawAttrs = Object.keys(attrs).map(function (name) {
