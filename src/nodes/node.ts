@@ -155,7 +155,7 @@ export default abstract class Node {
 	public exchangeChild(oldNode: Node, newNode: Node) {
 		const childIndex = this.childNodes.indexOf(oldNode);
 		if (childIndex === -1) {
-			throw new Error('replaceChild: node not found');
+			console.warn('replaceChild: node not found');
 		}
 		this.childNodes[childIndex] = newNode;
 

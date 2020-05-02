@@ -1858,7 +1858,7 @@ define("nodes/node", ["require", "exports", "nodes/type", "back"], function (req
         Node.prototype.exchangeChild = function (oldNode, newNode) {
             var childIndex = this.childNodes.indexOf(oldNode);
             if (childIndex === -1) {
-                throw new Error('replaceChild: node not found');
+                console.warn('replaceChild: node not found');
             }
             this.childNodes[childIndex] = newNode;
             var previousSibling = oldNode.previousSibling || null;
