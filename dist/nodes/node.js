@@ -97,9 +97,15 @@ var Node = /** @class */ (function () {
      * @param {HTMLElement} node     node to remove
      */
     Node.prototype.removeChild = function (node) {
-        this.childNodes = this.childNodes.filter(function (child) {
-            return (child !== node);
-        });
+        var len = this.childNodes.length;
+        for (var i = 0; i < len; i++) {
+            if (this.childNodes[i] === node) {
+                // dont not use array.filter
+                // this is necessary to handle pass by reference cases
+                this.childNodes.splice(i, 1);
+                break;
+            }
+        }
         var previousSibling = node.previousSibling || null;
         var nextSibling = node.nextSibling || null;
         if (previousSibling) {

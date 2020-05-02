@@ -81,9 +81,15 @@ export default abstract class Node {
      * @param {HTMLElement} node     node to remove
      */
     public removeChild(node: Node) {
-        this.childNodes = this.childNodes.filter((child) => {
-            return (child !== node);
-        });
+        const len = this.childNodes.length;
+        for (let i = 0; i < len; i++) {
+            if (this.childNodes[i] === node) {
+                // dont not use array.filter
+                // this is necessary to handle pass by reference cases
+                this.childNodes.splice(i, 1);
+                break;
+            }
+        }
 
         const previousSibling = node.previousSibling || null;
         const nextSibling = node.nextSibling || null;

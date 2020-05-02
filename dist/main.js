@@ -129,9 +129,15 @@ define("nodes/node", ["require", "exports", "nodes/type", "back", "he"], functio
          * @param {HTMLElement} node     node to remove
          */
         Node.prototype.removeChild = function (node) {
-            this.childNodes = this.childNodes.filter(function (child) {
-                return (child !== node);
-            });
+            var len = this.childNodes.length;
+            for (var i = 0; i < len; i++) {
+                if (this.childNodes[i] === node) {
+                    // dont not use array.filter
+                    // this is necessary to handle pass by reference cases
+                    this.childNodes.splice(i, 1);
+                    break;
+                }
+            }
             var previousSibling = node.previousSibling || null;
             var nextSibling = node.nextSibling || null;
             if (previousSibling) {
@@ -1188,19 +1194,20 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
          * @return {HTMLElement[]} matching elements
          */
         HTMLElement.prototype.getElementsByTagName = function (tagName) {
-            var result = this.querySelectorAll(tagName);
-            if (result.length > 0) {
-                return result;
-            }
-            result = this.querySelectorAll(tagName.toUpperCase());
-            if (result.length > 0) {
-                return result;
-            }
-            result = this.querySelectorAll(tagName.toLowerCase());
-            if (result.length > 0) {
-                return result;
-            }
-            return result;
+            return this.querySelectorAll(tagName);
+            // let result = this.querySelectorAll(tagName);
+            // if (result.length > 0) {
+            //     return result;
+            // }
+            // result = this.querySelectorAll(tagName.toUpperCase());
+            // if (result.length > 0) {
+            //     return result;
+            // }
+            // result = this.querySelectorAll(tagName.toLowerCase());
+            // if (result.length > 0) {
+            //     return result;
+            // }
+            // return result;
         };
         /**
          * Get Elements whose class property matches the specified string.

@@ -371,19 +371,20 @@ var HTMLElement = /** @class */ (function (_super) {
      * @return {HTMLElement[]} matching elements
      */
     HTMLElement.prototype.getElementsByTagName = function (tagName) {
-        var result = this.querySelectorAll(tagName);
-        if (result.length > 0) {
-            return result;
-        }
-        result = this.querySelectorAll(tagName.toUpperCase());
-        if (result.length > 0) {
-            return result;
-        }
-        result = this.querySelectorAll(tagName.toLowerCase());
-        if (result.length > 0) {
-            return result;
-        }
-        return result;
+        return this.querySelectorAll(tagName);
+        // let result = this.querySelectorAll(tagName);
+        // if (result.length > 0) {
+        //     return result;
+        // }
+        // result = this.querySelectorAll(tagName.toUpperCase());
+        // if (result.length > 0) {
+        //     return result;
+        // }
+        // result = this.querySelectorAll(tagName.toLowerCase());
+        // if (result.length > 0) {
+        //     return result;
+        // }
+        // return result;
     };
     /**
      * Get Elements whose class property matches the specified string.

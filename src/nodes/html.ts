@@ -335,19 +335,20 @@ export default class HTMLElement extends Node {
      * @return {HTMLElement[]} matching elements
      */
     public getElementsByTagName(tagName: string): HTMLElement[] {
-        let result = this.querySelectorAll(tagName);
-        if (result.length > 0) {
-            return result;
-        }
-        result = this.querySelectorAll(tagName.toUpperCase());
-        if (result.length > 0) {
-            return result;
-        }
-        result = this.querySelectorAll(tagName.toLowerCase());
-        if (result.length > 0) {
-            return result;
-        }
-        return result;
+        return this.querySelectorAll(tagName)
+        // let result = this.querySelectorAll(tagName);
+        // if (result.length > 0) {
+        //     return result;
+        // }
+        // result = this.querySelectorAll(tagName.toUpperCase());
+        // if (result.length > 0) {
+        //     return result;
+        // }
+        // result = this.querySelectorAll(tagName.toLowerCase());
+        // if (result.length > 0) {
+        //     return result;
+        // }
+        // return result;
     }
 
     /**
