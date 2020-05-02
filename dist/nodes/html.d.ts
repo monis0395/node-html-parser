@@ -3,6 +3,7 @@ import NodeType from './type';
 import TextNode from './text';
 import Matcher from '../matcher';
 import Style from './style';
+import { Options } from './parse';
 export interface KeyAttributes {
     id?: string;
     class?: string;
@@ -170,23 +171,3 @@ export default class HTMLElement extends Node {
     setAttributes(attributes: Attributes): void;
     insertAdjacentHTML(where: InsertPosition, html: string): void;
 }
-export interface Options {
-    lowerCaseTagName?: boolean;
-    upperCaseTagName?: boolean;
-    noFix?: boolean;
-    script?: boolean;
-    style?: boolean;
-    pre?: boolean;
-    comment?: boolean;
-}
-/**
- * Parses HTML and returns a root element
- * Parse a chuck of HTML source.
- * @param  {string} data      html
- * @return {HTMLElement}      root element
- */
-export declare function parse(data: string, options?: Options): (TextNode & {
-    valid: boolean;
-}) | (HTMLElement & {
-    valid: boolean;
-});

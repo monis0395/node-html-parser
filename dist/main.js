@@ -596,16 +596,248 @@ define("nodes/style", ["require", "exports"], function (require, exports) {
         _loop_1(jsName);
     }
 });
-define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/text", "matcher", "back", "nodes/comment", "nodes/style", "entities"], function (require, exports, node_2, type_2, text_1, matcher_1, back_1, comment_1, style_1, entities_1) {
+define("nodes/parse", ["require", "exports", "nodes/text", "nodes/comment", "back", "nodes/html"], function (require, exports, text_1, comment_1, back_1, html_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.parse = void 0;
+    text_1 = __importDefault(text_1);
+    comment_1 = __importDefault(comment_1);
+    back_1 = __importDefault(back_1);
+    html_1 = __importDefault(html_1);
+    var kMarkupPattern = /<!--[^]*?(?=-->)-->|<(\/?)([a-z][-.:0-9_a-z]*)\s*([^>]*?)(\/?)>/ig;
+    var kAttributePattern = /(^|\s)(id|class)\s*=\s*("([^"]+)"|'([^']+)'|(\S+))/ig;
+    var kSelfClosingElements = {
+        area: true,
+        base: true,
+        br: true,
+        col: true,
+        hr: true,
+        img: true,
+        input: true,
+        link: true,
+        meta: true,
+        source: true,
+    };
+    var kElementsClosedByOpening = {
+        li: { li: true },
+        p: { p: true, div: true },
+        b: { div: true },
+        td: { td: true, th: true },
+        th: { td: true, th: true },
+        h1: { h1: true },
+        h2: { h2: true },
+        h3: { h3: true },
+        h4: { h4: true },
+        h5: { h5: true },
+        h6: { h6: true },
+    };
+    var kElementsClosedByClosing = {
+        li: { ul: true, ol: true },
+        a: { div: true },
+        b: { div: true },
+        i: { div: true },
+        p: { div: true },
+        td: { tr: true, table: true },
+        th: { tr: true, table: true },
+    };
+    var kBlockTextElements = {
+        script: true,
+        noscript: true,
+        style: true,
+        pre: true,
+    };
+    var frameflag = 'documentfragmentcontainer';
+    /**
+     * Parses HTML and returns a root element
+     * Parse a chuck of HTML source.
+     * @param  {string} data      html
+     * @return {HTMLElement}      root element
+     */
+    function parse(data, options) {
+        if (options === void 0) { options = {}; }
+        var root = new html_1.default(null, {});
+        var currentParent = root;
+        var stack = [root];
+        var lastTextPos = -1;
+        var match;
+        // https://github.com/taoqf/node-html-parser/issues/38
+        data = "<" + frameflag + ">" + data + "</" + frameflag + ">";
+        var _loop_2 = function () {
+            if (lastTextPos > -1) {
+                if (lastTextPos + match[0].length < kMarkupPattern.lastIndex) {
+                    // if has content
+                    var text = data.substring(lastTextPos, kMarkupPattern.lastIndex - match[0].length);
+                    currentParent.appendChild(new text_1.default(text));
+                }
+            }
+            lastTextPos = kMarkupPattern.lastIndex;
+            if (match[2] === frameflag) {
+                return "continue";
+            }
+            if (match[0][1] === '!') {
+                // this is a comment
+                if (options.comment) {
+                    // Only keep what is in between <!-- and -->
+                    var text = data.substring(lastTextPos - 3, lastTextPos - match[0].length + 4);
+                    currentParent.appendChild(new comment_1.default(text));
+                }
+                return "continue";
+            }
+            if (options.lowerCaseTagName) {
+                match[2] = match[2].toLowerCase();
+            }
+            if (options.upperCaseTagName) {
+                match[2] = match[2].toUpperCase();
+            }
+            if (!match[1]) {
+                // not </ tags
+                var attrs = {};
+                for (var attMatch = void 0; attMatch = kAttributePattern.exec(match[3]);) {
+                    attrs[attMatch[2]] = attMatch[4] || attMatch[5] || attMatch[6];
+                }
+                var tagName = currentParent.tagName;
+                if (options.upperCaseTagName) {
+                    tagName = tagName.toLowerCase();
+                }
+                if (!match[4] && kElementsClosedByOpening[tagName]) {
+                    if (kElementsClosedByOpening[tagName][match[2]]) {
+                        stack.pop();
+                        currentParent = back_1.default(stack);
+                    }
+                }
+                // ignore container tag we add above
+                // https://github.com/taoqf/node-html-parser/issues/38
+                currentParent = currentParent.appendChild(new html_1.default(match[2], attrs, match[3]));
+                stack.push(currentParent);
+                var kBlockKey = match[2];
+                if (options.upperCaseTagName) {
+                    kBlockKey = kBlockKey.toLowerCase();
+                }
+                if (kBlockTextElements[kBlockKey]) {
+                    // a little test to find next </script> or </style> ...
+                    var closeMarkup_1 = '</' + match[2] + '>';
+                    var index = (function () {
+                        if (options.lowerCaseTagName) {
+                            return data.toLocaleLowerCase().indexOf(closeMarkup_1, kMarkupPattern.lastIndex);
+                        }
+                        else if (options.upperCaseTagName) {
+                            return data.toLocaleUpperCase().indexOf(closeMarkup_1, kMarkupPattern.lastIndex);
+                        }
+                        else {
+                            return data.indexOf(closeMarkup_1, kMarkupPattern.lastIndex);
+                        }
+                    })();
+                    if (options[match[2]]) {
+                        var text = void 0;
+                        if (index === -1) {
+                            // there is no matching ending for the text element.
+                            text = data.substr(kMarkupPattern.lastIndex);
+                        }
+                        else {
+                            text = data.substring(kMarkupPattern.lastIndex, index);
+                        }
+                        if (text.length > 0) {
+                            currentParent.appendChild(new text_1.default(text));
+                        }
+                    }
+                    if (index === -1) {
+                        lastTextPos = kMarkupPattern.lastIndex = data.length + 1;
+                    }
+                    else {
+                        lastTextPos = kMarkupPattern.lastIndex = index + closeMarkup_1.length;
+                        match[1] = 'true';
+                    }
+                }
+            }
+            var key = match[2];
+            if (options.upperCaseTagName) {
+                key = key.toLowerCase();
+            }
+            if (match[1] || match[4] || kSelfClosingElements[key]) {
+                // </ or /> or <br> etc.
+                while (true) {
+                    if (currentParent.tagName === match[2]) {
+                        stack.pop();
+                        currentParent = back_1.default(stack);
+                        break;
+                    }
+                    else {
+                        var tagName = currentParent.tagName;
+                        if (options.upperCaseTagName) {
+                            tagName = tagName.toLowerCase();
+                        }
+                        // Trying to close current tag, and move on
+                        if (kElementsClosedByClosing[tagName]) {
+                            if (kElementsClosedByClosing[tagName][match[2]]) {
+                                stack.pop();
+                                currentParent = back_1.default(stack);
+                                continue;
+                            }
+                        }
+                        // Use aggressive strategy to handle unmatching markups.
+                        break;
+                    }
+                }
+            }
+        };
+        while (match = kMarkupPattern.exec(data)) {
+            _loop_2();
+        }
+        var valid = !!(stack.length === 1);
+        if (!options.noFix) {
+            var response = root;
+            response.valid = valid;
+            var _loop_3 = function () {
+                // Handle each error elements.
+                var last = stack.pop();
+                var oneBefore = back_1.default(stack);
+                if (last.parentNode && last.parentNode.parentNode) {
+                    if (last.parentNode === oneBefore && last.tagName === oneBefore.tagName) {
+                        // Pair error case <h3> <h3> handle : Fixes to <h3> </h3>
+                        oneBefore.removeChild(last);
+                        last.childNodes.forEach(function (child) {
+                            oneBefore.parentNode.appendChild(child);
+                        });
+                        stack.pop();
+                    }
+                    else {
+                        // Single error  <div> <h3> </div> handle: Just removes <h3>
+                        oneBefore.removeChild(last);
+                        last.childNodes.forEach(function (child) {
+                            oneBefore.appendChild(child);
+                        });
+                    }
+                }
+                else {
+                    // If it's final element just skip.
+                }
+            };
+            while (stack.length > 1) {
+                _loop_3();
+            }
+            response.childNodes.forEach(function (node) {
+                if (node instanceof html_1.default) {
+                    node.parentNode = null;
+                }
+            });
+            return response;
+        }
+        else {
+            var response = new text_1.default(data);
+            response.valid = valid;
+            return response;
+        }
+    }
+    exports.parse = parse;
+});
+define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/text", "matcher", "back", "nodes/style", "entities", "nodes/parse"], function (require, exports, node_2, type_2, text_2, matcher_1, back_2, style_1, entities_1, parse_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     node_2 = __importDefault(node_2);
     type_2 = __importDefault(type_2);
-    text_1 = __importDefault(text_1);
+    text_2 = __importDefault(text_2);
     matcher_1 = __importDefault(matcher_1);
-    back_1 = __importDefault(back_1);
-    comment_1 = __importDefault(comment_1);
+    back_2 = __importDefault(back_2);
     style_1 = __importDefault(style_1);
     var kBlockElements = {
         div: true,
@@ -871,8 +1103,8 @@ define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/t
                 content = [content];
             }
             else if (typeof content == 'string') {
-                var r = parse(content, options);
-                content = r.childNodes.length ? r.childNodes : [new text_1.default(content, this)];
+                var r = parse_1.parse(content, options);
+                content = r.childNodes.length ? r.childNodes : [new text_2.default(content, this)];
             }
             this.childNodes = content;
         };
@@ -888,7 +1120,7 @@ define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/t
          * @return {string} structured text
          */
         HTMLElement.prototype.createTextNode = function (data) {
-            return new text_1.default(data);
+            return new text_2.default(data);
         };
         Object.defineProperty(HTMLElement.prototype, "outerHTML", {
             get: function () {
@@ -1036,7 +1268,7 @@ define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/t
             return this.childNodes.reduce(function (res, cur) {
                 stack.push([cur, 0, false]);
                 while (stack.length) {
-                    var state = back_1.default(stack); // get last element
+                    var state = back_2.default(stack); // get last element
                     var el = state[0];
                     if (state[1] === 0) {
                         // Seen for first time.
@@ -1090,7 +1322,7 @@ define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/t
                 var node = _a[_i];
                 stack.push([node, 0, false]);
                 while (stack.length) {
-                    var state = back_1.default(stack);
+                    var state = back_2.default(stack);
                     var el = state[0];
                     if (state[1] === 0) {
                         // Seen for first time.
@@ -1242,7 +1474,7 @@ define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/t
             if (arguments.length < 2) {
                 throw new Error('2 arguments required');
             }
-            var p = parse(html);
+            var p = parse_1.parse(html);
             if (where === 'afterend') {
                 p.childNodes.forEach(function (n) {
                     _this.parentNode.appendChild(n);
@@ -1269,224 +1501,12 @@ define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/t
         return HTMLElement;
     }(node_2.default));
     exports.default = HTMLElement;
-    // https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name
-    var kMarkupPattern = /<!--[^]*?(?=-->)-->|<(\/?)([a-z][-.:0-9_a-z]*)\s*([^>]*?)(\/?)>/ig;
-    var kAttributePattern = /(^|\s)(id|class)\s*=\s*("([^"]+)"|'([^']+)'|(\S+))/ig;
-    var kSelfClosingElements = {
-        area: true,
-        base: true,
-        br: true,
-        col: true,
-        hr: true,
-        img: true,
-        input: true,
-        link: true,
-        meta: true,
-        source: true,
-    };
-    var kElementsClosedByOpening = {
-        li: { li: true },
-        p: { p: true, div: true },
-        b: { div: true },
-        td: { td: true, th: true },
-        th: { td: true, th: true },
-        h1: { h1: true },
-        h2: { h2: true },
-        h3: { h3: true },
-        h4: { h4: true },
-        h5: { h5: true },
-        h6: { h6: true },
-    };
-    var kElementsClosedByClosing = {
-        li: { ul: true, ol: true },
-        a: { div: true },
-        b: { div: true },
-        i: { div: true },
-        p: { div: true },
-        td: { tr: true, table: true },
-        th: { tr: true, table: true },
-    };
-    var kBlockTextElements = {
-        script: true,
-        noscript: true,
-        style: true,
-        pre: true,
-    };
-    var frameflag = 'documentfragmentcontainer';
-    /**
-     * Parses HTML and returns a root element
-     * Parse a chuck of HTML source.
-     * @param  {string} data      html
-     * @return {HTMLElement}      root element
-     */
-    function parse(data, options) {
-        if (options === void 0) { options = {}; }
-        var root = new HTMLElement(null, {});
-        var currentParent = root;
-        var stack = [root];
-        var lastTextPos = -1;
-        var match;
-        // https://github.com/taoqf/node-html-parser/issues/38
-        data = "<" + frameflag + ">" + data + "</" + frameflag + ">";
-        var _loop_2 = function () {
-            if (lastTextPos > -1) {
-                if (lastTextPos + match[0].length < kMarkupPattern.lastIndex) {
-                    // if has content
-                    var text = data.substring(lastTextPos, kMarkupPattern.lastIndex - match[0].length);
-                    currentParent.appendChild(new text_1.default(text));
-                }
-            }
-            lastTextPos = kMarkupPattern.lastIndex;
-            if (match[2] === frameflag) {
-                return "continue";
-            }
-            if (match[0][1] === '!') {
-                // this is a comment
-                if (options.comment) {
-                    // Only keep what is in between <!-- and -->
-                    var text = data.substring(lastTextPos - 3, lastTextPos - match[0].length + 4);
-                    currentParent.appendChild(new comment_1.default(text));
-                }
-                return "continue";
-            }
-            if (options.lowerCaseTagName) {
-                match[2] = match[2].toLowerCase();
-            }
-            if (options.upperCaseTagName) {
-                match[2] = match[2].toUpperCase();
-            }
-            if (!match[1]) {
-                // not </ tags
-                var attrs = {};
-                for (var attMatch = void 0; attMatch = kAttributePattern.exec(match[3]);) {
-                    attrs[attMatch[2]] = attMatch[4] || attMatch[5] || attMatch[6];
-                }
-                var tagName = currentParent.tagName.toLowerCase();
-                if (!match[4] && kElementsClosedByOpening[tagName]) {
-                    if (kElementsClosedByOpening[tagName][match[2]]) {
-                        stack.pop();
-                        currentParent = back_1.default(stack);
-                    }
-                }
-                // ignore container tag we add above
-                // https://github.com/taoqf/node-html-parser/issues/38
-                currentParent = currentParent.appendChild(new HTMLElement(match[2], attrs, match[3]));
-                stack.push(currentParent);
-                if (kBlockTextElements[match[2].toLowerCase()]) {
-                    // a little test to find next </script> or </style> ...
-                    var closeMarkup_1 = '</' + match[2] + '>';
-                    var index = (function () {
-                        if (options.lowerCaseTagName) {
-                            return data.toLocaleLowerCase().indexOf(closeMarkup_1, kMarkupPattern.lastIndex);
-                        }
-                        else if (options.upperCaseTagName) {
-                            return data.toLocaleUpperCase().indexOf(closeMarkup_1, kMarkupPattern.lastIndex);
-                        }
-                        else {
-                            return data.indexOf(closeMarkup_1, kMarkupPattern.lastIndex);
-                        }
-                    })();
-                    if (options[match[2]]) {
-                        var text = void 0;
-                        if (index === -1) {
-                            // there is no matching ending for the text element.
-                            text = data.substr(kMarkupPattern.lastIndex);
-                        }
-                        else {
-                            text = data.substring(kMarkupPattern.lastIndex, index);
-                        }
-                        if (text.length > 0) {
-                            currentParent.appendChild(new text_1.default(text));
-                        }
-                    }
-                    if (index === -1) {
-                        lastTextPos = kMarkupPattern.lastIndex = data.length + 1;
-                    }
-                    else {
-                        lastTextPos = kMarkupPattern.lastIndex = index + closeMarkup_1.length;
-                        match[1] = 'true';
-                    }
-                }
-            }
-            if (match[1] || match[4] || kSelfClosingElements[match[2].toLowerCase()]) {
-                // </ or /> or <br> etc.
-                while (true) {
-                    if (currentParent.tagName === match[2]) {
-                        stack.pop();
-                        currentParent = back_1.default(stack);
-                        break;
-                    }
-                    else {
-                        var tagName = currentParent.tagName.toLowerCase();
-                        // Trying to close current tag, and move on
-                        if (kElementsClosedByClosing[tagName]) {
-                            if (kElementsClosedByClosing[tagName][match[2]]) {
-                                stack.pop();
-                                currentParent = back_1.default(stack);
-                                continue;
-                            }
-                        }
-                        // Use aggressive strategy to handle unmatching markups.
-                        break;
-                    }
-                }
-            }
-        };
-        while (match = kMarkupPattern.exec(data)) {
-            _loop_2();
-        }
-        var valid = !!(stack.length === 1);
-        if (!options.noFix) {
-            var response = root;
-            response.valid = valid;
-            var _loop_3 = function () {
-                // Handle each error elements.
-                var last = stack.pop();
-                var oneBefore = back_1.default(stack);
-                if (last.parentNode && last.parentNode.parentNode) {
-                    if (last.parentNode === oneBefore && last.tagName === oneBefore.tagName) {
-                        // Pair error case <h3> <h3> handle : Fixes to <h3> </h3>
-                        oneBefore.removeChild(last);
-                        last.childNodes.forEach(function (child) {
-                            oneBefore.parentNode.appendChild(child);
-                        });
-                        stack.pop();
-                    }
-                    else {
-                        // Single error  <div> <h3> </div> handle: Just removes <h3>
-                        oneBefore.removeChild(last);
-                        last.childNodes.forEach(function (child) {
-                            oneBefore.appendChild(child);
-                        });
-                    }
-                }
-                else {
-                    // If it's final element just skip.
-                }
-            };
-            while (stack.length > 1) {
-                _loop_3();
-            }
-            response.childNodes.forEach(function (node) {
-                if (node instanceof HTMLElement) {
-                    node.parentNode = null;
-                }
-            });
-            return response;
-        }
-        else {
-            var response = new text_1.default(data);
-            response.valid = valid;
-            return response;
-        }
-    }
-    exports.parse = parse;
 });
-define("nodes/node", ["require", "exports", "nodes/type", "back"], function (require, exports, type_3, back_2) {
+define("nodes/node", ["require", "exports", "nodes/type", "back"], function (require, exports, type_3, back_3) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     type_3 = __importDefault(type_3);
-    back_2 = __importDefault(back_2);
+    back_3 = __importDefault(back_3);
     /**
      * Node Class as base class for TextNode and HTMLElement.
      */
@@ -1547,7 +1567,7 @@ define("nodes/node", ["require", "exports", "nodes/type", "back"], function (req
              * @return {Node} last child node
              */
             get: function () {
-                return back_2.default(this.childNodes) || null;
+                return back_3.default(this.childNodes) || null;
             },
             enumerable: false,
             configurable: true
@@ -1558,7 +1578,7 @@ define("nodes/node", ["require", "exports", "nodes/type", "back"], function (req
              * @return {Node} last child element
              */
             get: function () {
-                return back_2.default(this.children) || null;
+                return back_3.default(this.children) || null;
             },
             enumerable: false,
             configurable: true
@@ -1721,15 +1741,15 @@ define("nodes/comment", ["require", "exports", "nodes/node", "nodes/type"], func
     }(node_3.default));
     exports.default = CommentNode;
 });
-define("index", ["require", "exports", "nodes/comment", "nodes/html", "nodes/node", "nodes/text", "nodes/style", "nodes/type"], function (require, exports, comment_2, html_1, node_4, text_2, style_2, type_5) {
+define("index", ["require", "exports", "nodes/comment", "nodes/html", "nodes/parse", "nodes/node", "nodes/text", "nodes/style", "nodes/type"], function (require, exports, comment_2, html_2, parse_2, node_4, text_3, style_2, type_5) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     Object.defineProperty(exports, "CommentNode", { enumerable: true, get: function () { return comment_2.default; } });
-    Object.defineProperty(exports, "HTMLElement", { enumerable: true, get: function () { return html_1.default; } });
-    Object.defineProperty(exports, "parse", { enumerable: true, get: function () { return html_1.parse; } });
-    Object.defineProperty(exports, "default", { enumerable: true, get: function () { return html_1.parse; } });
+    Object.defineProperty(exports, "HTMLElement", { enumerable: true, get: function () { return html_2.default; } });
+    Object.defineProperty(exports, "parse", { enumerable: true, get: function () { return parse_2.parse; } });
+    Object.defineProperty(exports, "default", { enumerable: true, get: function () { return parse_2.parse; } });
     Object.defineProperty(exports, "Node", { enumerable: true, get: function () { return node_4.default; } });
-    Object.defineProperty(exports, "TextNode", { enumerable: true, get: function () { return text_2.default; } });
+    Object.defineProperty(exports, "TextNode", { enumerable: true, get: function () { return text_3.default; } });
     Object.defineProperty(exports, "Style", { enumerable: true, get: function () { return style_2.default; } });
     Object.defineProperty(exports, "NodeType", { enumerable: true, get: function () { return type_5.default; } });
 });
