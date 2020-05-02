@@ -37,6 +37,9 @@ var Document = /** @class */ (function (_super) {
     Document.prototype.hasAttribute = function () {
         return false;
     };
+    Document.prototype.getAttribute = function () {
+        return '';
+    };
     Object.defineProperty(Document.prototype, "documentURI", {
         get: function () {
             return this._documentURI;

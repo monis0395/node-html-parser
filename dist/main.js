@@ -636,6 +636,9 @@ define("nodes/document", ["require", "exports", "nodes/node", "nodes/type", "nod
         Document.prototype.hasAttribute = function () {
             return false;
         };
+        Document.prototype.getAttribute = function () {
+            return '';
+        };
         Object.defineProperty(Document.prototype, "documentURI", {
             get: function () {
                 return this._documentURI;

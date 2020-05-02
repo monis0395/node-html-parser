@@ -26,6 +26,10 @@ export default class Document extends Node {
 		return false;
 	}
 
+	public getAttribute() {
+		return '';
+	}
+
 	get documentURI() {
 		return this._documentURI
 	}

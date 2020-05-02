@@ -11,6 +11,7 @@ export default class Document extends Node {
     nodeType: NodeType;
     toString(): string;
     hasAttribute(): boolean;
+    getAttribute(): string;
     get documentURI(): string;
     get baseURI(): string;
     /**
