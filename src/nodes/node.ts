@@ -1,6 +1,7 @@
 import NodeType from './type';
 import arr_back from '../back';
 import HTMLElement from './html';
+import { Options } from './options';
 
 /**
  * Node Class as base class for TextNode and HTMLElement.
@@ -18,6 +19,7 @@ export default abstract class Node {
 	nextElementSibling: Node | null = null;
 	previousElementSibling: Node | null = null;
 	tagName = '';
+	protected options: Options;
 
 	// Node Types
 	// ELEMENT_NODE= 1;
@@ -33,14 +35,20 @@ export default abstract class Node {
 	// DOCUMENT_FRAGMENT_NODE= 11;
 	// NOTATION_NODE= 12;
 
-	protected constructor(parentNode?: Node) {
+	protected constructor(parentNode?: Node, options?: Options) {
 		this.parentNode = parentNode || null;
+		this.options = options || {};
 		if (this.parentNode && this.parentNode.nodeType === NodeType.ELEMENT_NODE) {
 			this.parentElement = this.parentNode as HTMLElement;
 		}
 	}
 
 	abstract toString(): string;
+
+	public get ownerDocument() {
+		// todo: fix later
+		return this;
+	}
 
 	/**
 	 * Get first child node

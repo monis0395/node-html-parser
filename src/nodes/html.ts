@@ -6,6 +6,7 @@ import Matcher from '../matcher';
 import arr_back from '../back';
 import Style from './style';
 import { decodeHTML } from 'entities';
+import { Options } from './options';
 
 export interface KeyAttributes {
 	id?: string;
@@ -65,11 +66,12 @@ export default class HTMLElement extends Node {
 	 * @param keyAttrs      id and class attribute
 	 * @param rawAttrs      attributes in string
 	 * @param parentNode    parent of current element
+	 * @param options       options which were passed while parsing
 	 *
 	 * @memberof HTMLElement
 	 */
-	public constructor(tagName: string, keyAttrs: KeyAttributes, rawAttrs?: string, parentNode?: Node) {
-		super(parentNode);
+	public constructor(tagName: string, keyAttrs: KeyAttributes, rawAttrs?: string, parentNode?: Node, options?: Options) {
+		super(parentNode, options);
 		this.rawAttrs = rawAttrs || '';
 		this.tagName = tagName || '';
 		this.childNodes = [];
@@ -150,26 +152,9 @@ export default class HTMLElement extends Node {
 		return this.tagName.toLowerCase();
 	}
 
-	public get title() {
-		const node = this.getElementsByTagName('title')[0];
-		return (node && node.textContent) || '';
-	}
-
-	public get documentElement() {
-		return this.getElementsByTagName('html')[0];
-	}
-
 	public get ownerDocument() {
 		// todo: fix later
 		return this;
-	}
-
-	public get head() {
-		return this.getElementsByTagName('head')[0];
-	}
-
-	public get body() {
-		return this.getElementsByTagName('body')[0];
 	}
 
 	/**
@@ -239,10 +224,10 @@ export default class HTMLElement extends Node {
 	}
 
 	public set innerHTML(html) {
-		this.set_content(html);
+		this.set_content(html, this.options);
 	}
 
-	public set_content(content: string | Node | Node[], options = {} as Options) {
+	public set_content(content: string | Node | Node[], options = this.options as Options) {
 		if (content instanceof Node) {
 			content = [content];
 		} else if (typeof content == 'string') {
@@ -250,22 +235,6 @@ export default class HTMLElement extends Node {
 			content = r.childNodes.length ? r.childNodes : [new TextNode(content, this)];
 		}
 		this.childNodes = content;
-	}
-
-	/**
-	 * Creates a new Text node.
-	 * @return {string} structured text
-	 */
-	public createElement(tagName: string): HTMLElement {
-		return new HTMLElement(tagName, {});
-	}
-
-	/**
-	 * Creates a new Text node.
-	 * @return {string} structured text
-	 */
-	public createTextNode(data: string): TextNode {
-		return new TextNode(data);
 	}
 
 	public get outerHTML() {
@@ -353,16 +322,10 @@ export default class HTMLElement extends Node {
 	 * @return {HTMLElement[]} matching elements
 	 */
 	public getElementsByTagName(tagName: string): HTMLElement[] {
-		// return this.querySelectorAll(tagName)
-		let result = this.querySelectorAll(tagName);
-		if (result.length > 0) {
-			return result;
+		if (this.options.upperCaseTagName) {
+			tagName = tagName.toUpperCase();
 		}
-		result = this.querySelectorAll(tagName.toUpperCase());
-		if (result.length > 0) {
-			return result;
-		}
-		return result;
+		return this.querySelectorAll(tagName);
 	}
 
 	/**
@@ -685,15 +648,6 @@ const kBlockTextElements = {
 	pre: true,
 };
 
-export interface Options {
-	lowerCaseTagName?: boolean;
-	upperCaseTagName?: boolean;
-	noFix?: boolean;
-	script?: boolean;
-	style?: boolean;
-	pre?: boolean;
-	comment?: boolean;
-}
 
 const frameflag = 'documentfragmentcontainer';
 
@@ -701,10 +655,11 @@ const frameflag = 'documentfragmentcontainer';
  * Parses HTML and returns a root element
  * Parse a chuck of HTML source.
  * @param  {string} data      html
+ * @param options
  * @return {HTMLElement}      root element
  */
 export function parse(data: string, options = {} as Options) {
-	const root = new HTMLElement(null, {});
+	const root = new HTMLElement(null, {}, '', null, options);
 	let currentParent = root;
 	const stack = [root];
 	let lastTextPos = -1;

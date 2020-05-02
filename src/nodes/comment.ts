@@ -1,9 +1,10 @@
 import Node from './node';
 import NodeType from './type';
+import { Options } from './options';
 
 export default class CommentNode extends Node {
-	constructor(value: string, parentNode?: Node) {
-		super(parentNode);
+	constructor(value: string, parentNode?: Node, options?: Options) {
+		super(parentNode, options);
 		this.rawText = value;
 	}
 
