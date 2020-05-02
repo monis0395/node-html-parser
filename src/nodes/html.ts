@@ -353,20 +353,16 @@ export default class HTMLElement extends Node {
 	 * @return {HTMLElement[]} matching elements
 	 */
 	public getElementsByTagName(tagName: string): HTMLElement[] {
-		return this.querySelectorAll(tagName)
-		// let result = this.querySelectorAll(tagName);
-		// if (result.length > 0) {
-		//     return result;
-		// }
-		// result = this.querySelectorAll(tagName.toUpperCase());
-		// if (result.length > 0) {
-		//     return result;
-		// }
-		// result = this.querySelectorAll(tagName.toLowerCase());
-		// if (result.length > 0) {
-		//     return result;
-		// }
-		// return result;
+		// return this.querySelectorAll(tagName)
+		let result = this.querySelectorAll(tagName);
+		if (result.length > 0) {
+		    return result;
+		}
+		result = this.querySelectorAll(tagName.toUpperCase());
+		if (result.length > 0) {
+		    return result;
+		}
+		return result;
 	}
 
 	/**
@@ -687,6 +683,7 @@ const kBlockTextElements = {
 
 export interface Options {
 	lowerCaseTagName?: boolean;
+	upperCaseTagName?: boolean;
 	noFix?: boolean;
 	script?: boolean;
 	style?: boolean;
@@ -734,6 +731,9 @@ export function parse(data: string, options = {} as Options) {
 		if (options.lowerCaseTagName) {
 			match[2] = match[2].toLowerCase();
 		}
+		if (options.upperCaseTagName) {
+			match[2] = match[2].toUpperCase();
+		}
 		if (!match[1]) {
 			// not </ tags
 			const attrs = {};
@@ -741,7 +741,7 @@ export function parse(data: string, options = {} as Options) {
 				attrs[attMatch[2]] = attMatch[4] || attMatch[5] || attMatch[6];
 			}
 
-			const tagName = currentParent.tagName as 'li' | 'p' | 'b' | 'td' | 'th' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+			const tagName = currentParent.tagName.toLowerCase() as 'li' | 'p' | 'b' | 'td' | 'th' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 			if (!match[4] && kElementsClosedByOpening[tagName]) {
 				if (kElementsClosedByOpening[tagName][match[2]]) {
 					stack.pop();
@@ -752,12 +752,14 @@ export function parse(data: string, options = {} as Options) {
 			// https://github.com/taoqf/node-html-parser/issues/38
 			currentParent = currentParent.appendChild(new HTMLElement(match[2], attrs, match[3]));
 			stack.push(currentParent);
-			if (kBlockTextElements[match[2]]) {
+			if (kBlockTextElements[match[2].toLowerCase()]) {
 				// a little test to find next </script> or </style> ...
 				const closeMarkup = '</' + match[2] + '>';
 				const index = (() => {
 					if (options.lowerCaseTagName) {
 						return data.toLocaleLowerCase().indexOf(closeMarkup, kMarkupPattern.lastIndex);
+					} else if (options.upperCaseTagName) {
+						return data.toLocaleUpperCase().indexOf(closeMarkup, kMarkupPattern.lastIndex);
 					} else {
 						return data.indexOf(closeMarkup, kMarkupPattern.lastIndex);
 					}
@@ -782,7 +784,7 @@ export function parse(data: string, options = {} as Options) {
 				}
 			}
 		}
-		if (match[1] || match[4] || kSelfClosingElements[match[2]]) {
+		if (match[1] || match[4] || kSelfClosingElements[match[2].toLowerCase()]) {
 			// </ or /> or <br> etc.
 			while (true) {
 				if (currentParent.tagName === match[2]) {
@@ -790,7 +792,7 @@ export function parse(data: string, options = {} as Options) {
 					currentParent = arr_back(stack);
 					break;
 				} else {
-					const tagName = currentParent.tagName as 'li' | 'a' | 'b' | 'i' | 'p' | 'td' | 'th';
+					const tagName = currentParent.tagName.toLowerCase() as 'li' | 'a' | 'b' | 'i' | 'p' | 'td' | 'th';
 					// Trying to close current tag, and move on
 					if (kElementsClosedByClosing[tagName]) {
 						if (kElementsClosedByClosing[tagName][match[2]]) {

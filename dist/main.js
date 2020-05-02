@@ -980,20 +980,16 @@ define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/t
          * @return {HTMLElement[]} matching elements
          */
         HTMLElement.prototype.getElementsByTagName = function (tagName) {
-            return this.querySelectorAll(tagName);
-            // let result = this.querySelectorAll(tagName);
-            // if (result.length > 0) {
-            //     return result;
-            // }
-            // result = this.querySelectorAll(tagName.toUpperCase());
-            // if (result.length > 0) {
-            //     return result;
-            // }
-            // result = this.querySelectorAll(tagName.toLowerCase());
-            // if (result.length > 0) {
-            //     return result;
-            // }
-            // return result;
+            // return this.querySelectorAll(tagName)
+            var result = this.querySelectorAll(tagName);
+            if (result.length > 0) {
+                return result;
+            }
+            result = this.querySelectorAll(tagName.toUpperCase());
+            if (result.length > 0) {
+                return result;
+            }
+            return result;
         };
         /**
          * Get Elements whose class property matches the specified string.
@@ -1356,13 +1352,16 @@ define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/t
             if (options.lowerCaseTagName) {
                 match[2] = match[2].toLowerCase();
             }
+            if (options.upperCaseTagName) {
+                match[2] = match[2].toUpperCase();
+            }
             if (!match[1]) {
                 // not </ tags
                 var attrs = {};
                 for (var attMatch = void 0; attMatch = kAttributePattern.exec(match[3]);) {
                     attrs[attMatch[2]] = attMatch[4] || attMatch[5] || attMatch[6];
                 }
-                var tagName = currentParent.tagName;
+                var tagName = currentParent.tagName.toLowerCase();
                 if (!match[4] && kElementsClosedByOpening[tagName]) {
                     if (kElementsClosedByOpening[tagName][match[2]]) {
                         stack.pop();
@@ -1373,12 +1372,15 @@ define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/t
                 // https://github.com/taoqf/node-html-parser/issues/38
                 currentParent = currentParent.appendChild(new HTMLElement(match[2], attrs, match[3]));
                 stack.push(currentParent);
-                if (kBlockTextElements[match[2]]) {
+                if (kBlockTextElements[match[2].toLowerCase()]) {
                     // a little test to find next </script> or </style> ...
                     var closeMarkup_1 = '</' + match[2] + '>';
                     var index = (function () {
                         if (options.lowerCaseTagName) {
                             return data.toLocaleLowerCase().indexOf(closeMarkup_1, kMarkupPattern.lastIndex);
+                        }
+                        else if (options.upperCaseTagName) {
+                            return data.toLocaleUpperCase().indexOf(closeMarkup_1, kMarkupPattern.lastIndex);
                         }
                         else {
                             return data.indexOf(closeMarkup_1, kMarkupPattern.lastIndex);
@@ -1406,7 +1408,7 @@ define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/t
                     }
                 }
             }
-            if (match[1] || match[4] || kSelfClosingElements[match[2]]) {
+            if (match[1] || match[4] || kSelfClosingElements[match[2].toLowerCase()]) {
                 // </ or /> or <br> etc.
                 while (true) {
                     if (currentParent.tagName === match[2]) {
@@ -1415,7 +1417,7 @@ define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/t
                         break;
                     }
                     else {
-                        var tagName = currentParent.tagName;
+                        var tagName = currentParent.tagName.toLowerCase();
                         // Trying to close current tag, and move on
                         if (kElementsClosedByClosing[tagName]) {
                             if (kElementsClosedByClosing[tagName][match[2]]) {
