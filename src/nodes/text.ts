@@ -33,6 +33,10 @@ export default class TextNode extends Node {
 		return this.text;
 	}
 
+	set textContent(text: string) {
+		this.rawText = text;
+	}
+
 	/**
 	 * Detect if the node contains only white space.
 	 * @return {boolean}

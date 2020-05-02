@@ -21,6 +21,7 @@ export default class TextNode extends Node {
      * @return {string} text content
      */
     get textContent(): string;
+    set textContent(text: string);
     /**
      * Detect if the node contains only white space.
      * @return {boolean}

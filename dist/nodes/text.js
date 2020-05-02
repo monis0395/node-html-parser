@@ -53,6 +53,9 @@ var TextNode = /** @class */ (function (_super) {
         get: function () {
             return this.text;
         },
+        set: function (text) {
+            this.rawText = text;
+        },
         enumerable: false,
         configurable: true
     });

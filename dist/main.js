@@ -82,6 +82,9 @@ define("nodes/text", ["require", "exports", "nodes/type", "nodes/node"], functio
             get: function () {
                 return this.text;
             },
+            set: function (text) {
+                this.rawText = text;
+            },
             enumerable: false,
             configurable: true
         });
