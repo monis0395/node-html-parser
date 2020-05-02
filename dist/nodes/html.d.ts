@@ -62,6 +62,7 @@ export default class HTMLElement extends Node {
      */
     get text(): string;
     get textContent(): string;
+    set textContent(text: string);
     get id(): string;
     set id(str: string);
     get href(): string;

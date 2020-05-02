@@ -123,6 +123,10 @@ export default class HTMLElement extends Node {
 		return this.text;
 	}
 
+	public set textContent(text: string) {
+		this.set_content(text);
+	}
+
 	public get id() {
 		return this.getAttribute('id') || '';
 	}

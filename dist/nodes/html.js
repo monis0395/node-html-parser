@@ -126,6 +126,9 @@ var HTMLElement = /** @class */ (function (_super) {
         get: function () {
             return this.text;
         },
+        set: function (text) {
+            this.set_content(text);
+        },
         enumerable: false,
         configurable: true
     });

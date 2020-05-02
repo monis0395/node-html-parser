@@ -1023,6 +1023,9 @@ define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/t
             get: function () {
                 return this.text;
             },
+            set: function (text) {
+                this.set_content(text);
+            },
             enumerable: false,
             configurable: true
         });
