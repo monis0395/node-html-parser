@@ -596,7 +596,7 @@ define("nodes/style", ["require", "exports"], function (require, exports) {
         _loop_1(jsName);
     }
 });
-define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "nodes/text", "matcher", "back", "nodes/comment", "nodes/style"], function (require, exports, he_1, node_2, type_2, text_1, matcher_1, back_1, comment_1, style_1) {
+define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/text", "matcher", "back", "nodes/comment", "nodes/style", "entities"], function (require, exports, node_2, type_2, text_1, matcher_1, back_1, comment_1, style_1, entities_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.parse = void 0;
@@ -695,7 +695,7 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
              * @return {string} text content
              */
             get: function () {
-                return he_1.decode(this.rawText);
+                return entities_1.decodeHTML(this.rawText);
             },
             enumerable: false,
             configurable: true
@@ -1134,7 +1134,7 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
                 var attrs = this.rawAttributes;
                 for (var key in attrs) {
                     var val = attrs[key] || '';
-                    this._attrs[key] = he_1.decode(val);
+                    this._attrs[key] = entities_1.decodeHTML(val);
                 }
                 return this._attrs;
             },
@@ -1203,7 +1203,7 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
             var attrs = this.rawAttributes;
             attrs[key] = String(value);
             if (this._attrs) {
-                this._attrs[key] = he_1.decode(attrs[key]);
+                this._attrs[key] = entities_1.decodeHTML(attrs[key]);
             }
             // Update rawString
             this.rawAttrs = Object.keys(attrs).map(function (name) {

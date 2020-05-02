@@ -1,4 +1,3 @@
-import { decode } from 'he';
 import Node from './node';
 import NodeType from './type';
 import TextNode from './text';
@@ -6,6 +5,7 @@ import Matcher from '../matcher';
 import arr_back from '../back';
 import CommentNode from './comment';
 import Style from './style';
+import { decodeHTML } from 'entities';
 
 export interface KeyAttributes {
 	id?: string;
@@ -111,7 +111,7 @@ export default class HTMLElement extends Node {
 	 * @return {string} text content
 	 */
 	public get text() {
-		return decode(this.rawText);
+		return decodeHTML(this.rawText);
 	}
 
 	public get textContent() {
@@ -512,7 +512,7 @@ export default class HTMLElement extends Node {
 		const attrs = this.rawAttributes;
 		for (const key in attrs) {
 			const val = attrs[key] || '';
-			this._attrs[key] = decode(val);
+			this._attrs[key] = decodeHTML(val);
 		}
 		return this._attrs;
 	}
@@ -578,7 +578,7 @@ export default class HTMLElement extends Node {
 		const attrs = this.rawAttributes;
 		attrs[key] = String(value);
 		if (this._attrs) {
-			this._attrs[key] = decode(attrs[key]);
+			this._attrs[key] = decodeHTML(attrs[key]);
 		}
 		// Update rawString
 		this.rawAttrs = Object.keys(attrs).map((name) => {

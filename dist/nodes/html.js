@@ -17,7 +17,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.parse = void 0;
-var he_1 = require("he");
 var node_1 = __importDefault(require("./node"));
 var type_1 = __importDefault(require("./type"));
 var text_1 = __importDefault(require("./text"));
@@ -25,6 +24,7 @@ var matcher_1 = __importDefault(require("../matcher"));
 var back_1 = __importDefault(require("../back"));
 var comment_1 = __importDefault(require("./comment"));
 var style_1 = __importDefault(require("./style"));
+var entities_1 = require("entities");
 var kBlockElements = {
     div: true,
     p: true,
@@ -113,7 +113,7 @@ var HTMLElement = /** @class */ (function (_super) {
          * @return {string} text content
          */
         get: function () {
-            return he_1.decode(this.rawText);
+            return entities_1.decodeHTML(this.rawText);
         },
         enumerable: false,
         configurable: true
@@ -552,7 +552,7 @@ var HTMLElement = /** @class */ (function (_super) {
             var attrs = this.rawAttributes;
             for (var key in attrs) {
                 var val = attrs[key] || '';
-                this._attrs[key] = he_1.decode(val);
+                this._attrs[key] = entities_1.decodeHTML(val);
             }
             return this._attrs;
         },
@@ -621,7 +621,7 @@ var HTMLElement = /** @class */ (function (_super) {
         var attrs = this.rawAttributes;
         attrs[key] = String(value);
         if (this._attrs) {
-            this._attrs[key] = he_1.decode(attrs[key]);
+            this._attrs[key] = entities_1.decodeHTML(attrs[key]);
         }
         // Update rawString
         this.rawAttrs = Object.keys(attrs).map(function (name) {

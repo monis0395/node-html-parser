@@ -23,7 +23,7 @@
 	],
 	"license": "MIT",
 	"dependencies": {
-		"he": "1.1.1"
+		"entities": "^2.0.0"
 	},
 	"devDependencies": {
 		"@types/entities": "latest",
