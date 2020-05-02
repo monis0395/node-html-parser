@@ -56,10 +56,9 @@ describe('HTML Parser', function () {
 
 			const root = parseHTML('<p id="id"><a class=\'cls\'>Hello</a><ul><li><li></ul><span></span></p>');
 
-			const p = new HTMLElement('p', {id: 'id'}, 'id="id"');
-			const el = new HTMLElement('a', {class: 'cls'}, 'class=\'cls\'')
+			const p = new HTMLElement('p', { id: 'id' }, 'id="id"');
 			p
-				.appendChild(el)
+				.appendChild(new HTMLElement('a', {class: 'cls'}, 'class=\'cls\''))
 				.appendChild(new TextNode('Hello'));
 			const ul = p.appendChild(new HTMLElement('ul', {}, ''));
 			ul.appendChild(new HTMLElement('li', {}, ''));
