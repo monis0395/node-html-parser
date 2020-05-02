@@ -96,6 +96,28 @@ export default class HTMLElement extends Node {
         }
     }
 
+    /**
+     * Get escpaed (as-it) text value of current node and its children.
+     * @return {string} text content
+     */
+    public get rawText() {
+        return this.childNodes.reduce((pre, cur) => {
+            return pre += cur.rawText;
+        }, '');
+    }
+
+    /**
+     * Get unescaped text value of current node and its children.
+     * @return {string} text content
+     */
+    public get text() {
+        return decode(this.rawText);
+    }
+
+    public get textContent() {
+        return this.text;
+    }
+
     public get id() {
         return this.getAttribute('id') || '';
     }
@@ -234,16 +256,16 @@ export default class HTMLElement extends Node {
      * Creates a new Text node.
      * @return {string} structured text
      */
-    public createTextNode(data: string): TextNode {
-        return new TextNode(data);
+    public createElement(tagName: string): HTMLElement {
+        return new HTMLElement(tagName, {});
     }
 
     /**
      * Creates a new Text node.
      * @return {string} structured text
      */
-    public createElement(tagName: string): HTMLElement {
-        return new HTMLElement(tagName, {});
+    public createTextNode(data: string): TextNode {
+        return new TextNode(data);
     }
 
     public get outerHTML() {
@@ -504,7 +526,7 @@ export default class HTMLElement extends Node {
             return this._rawAttrs;
         const attrs = {} as RawAttributes;
         if (this.rawAttrs) {
-			const re = /\b([a-z][a-z0-9\-]*)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|(\S+)))?/ig;
+            const re = /\b([a-z][a-z0-9\-]*)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|(\S+)))?/ig;
             let match: RegExpExecArray;
             while (match = re.exec(this.rawAttrs)) {
                 attrs[match[1]] = match[2] || match[3] || match[4] || null;
@@ -682,7 +704,7 @@ const frameflag = 'documentfragmentcontainer';
  * @return {HTMLElement}      root element
  */
 export function parse(data: string, options = {} as Options) {
-    const root = new HTMLElement('root', {});
+	const root = new HTMLElement(null, {});
     let currentParent = root;
     const stack = [root];
     let lastTextPos = -1;

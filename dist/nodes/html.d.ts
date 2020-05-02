@@ -48,6 +48,17 @@ export default class HTMLElement extends Node {
     constructor(tagName: string, keyAttrs: KeyAttributes, rawAttrs?: string, parentNode?: Node);
     get className(): string;
     set className(names: string);
+    /**
+     * Get escpaed (as-it) text value of current node and its children.
+     * @return {string} text content
+     */
+    get rawText(): string;
+    /**
+     * Get unescaped text value of current node and its children.
+     * @return {string} text content
+     */
+    get text(): string;
+    get textContent(): string;
     get id(): string;
     set id(str: string);
     get href(): string;
@@ -74,12 +85,12 @@ export default class HTMLElement extends Node {
      * Creates a new Text node.
      * @return {string} structured text
      */
-    createTextNode(data: string): TextNode;
+    createElement(tagName: string): HTMLElement;
     /**
      * Creates a new Text node.
      * @return {string} structured text
      */
-    createElement(tagName: string): HTMLElement;
+    createTextNode(data: string): TextNode;
     get outerHTML(): string;
     /**
      * Trim element from right (in block) after seeing pattern in a TextNode.

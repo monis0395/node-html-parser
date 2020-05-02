@@ -94,6 +94,37 @@ var HTMLElement = /** @class */ (function (_super) {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(HTMLElement.prototype, "rawText", {
+        /**
+         * Get escpaed (as-it) text value of current node and its children.
+         * @return {string} text content
+         */
+        get: function () {
+            return this.childNodes.reduce(function (pre, cur) {
+                return pre += cur.rawText;
+            }, '');
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(HTMLElement.prototype, "text", {
+        /**
+         * Get unescaped text value of current node and its children.
+         * @return {string} text content
+         */
+        get: function () {
+            return he_1.decode(this.rawText);
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(HTMLElement.prototype, "textContent", {
+        get: function () {
+            return this.text;
+        },
+        enumerable: false,
+        configurable: true
+    });
     Object.defineProperty(HTMLElement.prototype, "id", {
         get: function () {
             return this.getAttribute('id') || '';
@@ -267,15 +298,15 @@ var HTMLElement = /** @class */ (function (_super) {
      * Creates a new Text node.
      * @return {string} structured text
      */
-    HTMLElement.prototype.createTextNode = function (data) {
-        return new text_1.default(data);
+    HTMLElement.prototype.createElement = function (tagName) {
+        return new HTMLElement(tagName, {});
     };
     /**
      * Creates a new Text node.
      * @return {string} structured text
      */
-    HTMLElement.prototype.createElement = function (tagName) {
-        return new HTMLElement(tagName, {});
+    HTMLElement.prototype.createTextNode = function (data) {
+        return new text_1.default(data);
     };
     Object.defineProperty(HTMLElement.prototype, "outerHTML", {
         get: function () {
@@ -712,7 +743,7 @@ var frameflag = 'documentfragmentcontainer';
  */
 function parse(data, options) {
     if (options === void 0) { options = {}; }
-    var root = new HTMLElement('root', {});
+    var root = new HTMLElement(null, {});
     var currentParent = root;
     var stack = [root];
     var lastTextPos = -1;

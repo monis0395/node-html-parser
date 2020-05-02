@@ -1,6 +1,5 @@
 import NodeType from './type';
 import arr_back from '../back';
-import { decode } from 'he';
 import HTMLElement from './html';
 
 /**
@@ -21,18 +20,18 @@ export default abstract class Node {
     tagName = '';
 
     // Node Types
-    ELEMENT_NODE= 1;
-    ATTRIBUTE_NODE= 2;
-    TEXT_NODE= 3;
-    CDATA_SECTION_NODE= 4;
-    ENTITY_REFERENCE_NODE= 5;
-    ENTITY_NODE= 6;
-    PROCESSING_INSTRUCTION_NODE= 7;
-    COMMENT_NODE= 8;
-    DOCUMENT_NODE= 9;
-    DOCUMENT_TYPE_NODE= 10;
-    DOCUMENT_FRAGMENT_NODE= 11;
-    NOTATION_NODE= 12;
+    // ELEMENT_NODE= 1;
+    // ATTRIBUTE_NODE= 2;
+    // TEXT_NODE= 3;
+    // CDATA_SECTION_NODE= 4;
+    // ENTITY_REFERENCE_NODE= 5;
+    // ENTITY_NODE= 6;
+    // PROCESSING_INSTRUCTION_NODE= 7;
+    // COMMENT_NODE= 8;
+    // DOCUMENT_NODE= 9;
+    // DOCUMENT_TYPE_NODE= 10;
+    // DOCUMENT_FRAGMENT_NODE= 11;
+    // NOTATION_NODE= 12;
 
     protected constructor(parentNode?: Node) {
         this.parentNode = parentNode || null;
@@ -42,20 +41,6 @@ export default abstract class Node {
     }
 
     abstract toString(): string;
-
-    get childElementCount() {
-        return this.childNodes.length;
-    }
-
-    /**
-     * Get unescaped text value of current node and its children.
-     * @return {string} text content
-     */
-    public get textContent() {
-        return decode(this.childNodes.reduce((pre, cur) => {
-            return pre += cur.rawText;
-        }, ''));
-    }
 
     /**
      * Get first child node
