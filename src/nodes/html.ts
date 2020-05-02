@@ -8,6 +8,7 @@ import Style from './style';
 import { decodeHTML } from 'entities';
 import { Options } from './options';
 import Document from './document';
+import { fixRelativeUris } from './fixes';
 
 export interface KeyAttributes {
 	id?: string;
@@ -784,6 +785,9 @@ export function parse(data: string, options = {} as Options) {
 			}
 		}
 	}
+	if (options.fixRelativeUris) {
+		fixRelativeUris(root);
+	}
 	type Response = (HTMLElement | TextNode) & { valid: boolean };
 	const valid = !!(stack.length === 1);
 	if (!options.noFix) {
@@ -824,4 +828,5 @@ export function parse(data: string, options = {} as Options) {
 		response.valid = valid;
 		return response;
 	}
+
 }

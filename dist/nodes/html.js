@@ -26,6 +26,7 @@ var back_1 = __importDefault(require("../back"));
 var style_1 = __importDefault(require("./style"));
 var entities_1 = require("entities");
 var document_1 = __importDefault(require("./document"));
+var fixes_1 = require("./fixes");
 var kBlockElements = {
     div: true,
     p: true,
@@ -818,6 +819,9 @@ function parse(data, options) {
     };
     while (match = kMarkupPattern.exec(data)) {
         _loop_1();
+    }
+    if (options.fixRelativeUris) {
+        fixes_1.fixRelativeUris(root);
     }
     var valid = !!(stack.length === 1);
     if (!options.noFix) {

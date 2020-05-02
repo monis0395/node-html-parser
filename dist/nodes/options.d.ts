@@ -7,5 +7,5 @@ export interface Options {
     pre?: boolean;
     comment?: boolean;
     url?: string;
-    fixUrls?: boolean;
+    fixRelativeUris?: boolean;
 }

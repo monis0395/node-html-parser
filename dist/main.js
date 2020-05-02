@@ -850,7 +850,66 @@ define("nodes/document", ["require", "exports", "nodes/node", "nodes/type", "nod
     }(node_2.default));
     exports.default = Document;
 });
-define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/text", "nodes/comment", "matcher", "back", "nodes/style", "entities", "nodes/document"], function (require, exports, node_3, type_3, text_2, comment_1, matcher_2, back_2, style_1, entities_1, document_1) {
+define("nodes/fixes", ["require", "exports", "url"], function (require, exports, url_2) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.fixRelativeUris = void 0;
+    var REGEXPS = {
+        srcsetUrl: /(\S+)(\s+[\d.]+[xw])?(\s*(?:,|$))/g,
+    };
+    function fixRelativeUris(document) {
+        var baseURI = document.baseURI;
+        var documentURI = document.documentURI;
+        if (!baseURI) {
+            return;
+        }
+        function toAbsoluteURI(uri) {
+            // Leave hash links alone if the base URI matches the document URI:
+            if (baseURI === documentURI && uri.startsWith('#')) {
+                return uri;
+            }
+            // Otherwise, resolve against base URI:
+            try {
+                return new url_2.URL(uri, baseURI).href;
+            }
+            catch (ex) {
+                // Something went wrong, just return the original:
+            }
+            return uri;
+        }
+        var links = document.getElementsByTagName('a');
+        links.forEach(function (link) {
+            var href = link.getAttribute('href');
+            if (href) {
+                // Replace links with javascript: URIs with text content, since
+                // they won't work after scripts have been removed from the page.
+                if (href.startsWith('javascript:')) {
+                    var text = document.createTextNode(link.textContent);
+                    link.parentNode.replaceChild(text, link);
+                }
+                else {
+                    link.setAttribute('href', toAbsoluteURI(href));
+                }
+            }
+        });
+        var imgs = document.querySelectorAll(['img', 'picture', 'figure', 'video', 'audio', 'source'].join(','));
+        imgs.forEach(function (media) {
+            var src = media.getAttribute('src');
+            var srcset = media.getAttribute('srcset');
+            if (src) {
+                media.setAttribute('src', toAbsoluteURI(src));
+            }
+            if (srcset) {
+                var newSrcset = srcset.replace(REGEXPS.srcsetUrl, function (_, p1, p2, p3) {
+                    return toAbsoluteURI(p1) + (p2 || '') + p3;
+                });
+                media.setAttribute('srcset', newSrcset);
+            }
+        });
+    }
+    exports.fixRelativeUris = fixRelativeUris;
+});
+define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/text", "nodes/comment", "matcher", "back", "nodes/style", "entities", "nodes/document", "nodes/fixes"], function (require, exports, node_3, type_3, text_2, comment_1, matcher_2, back_2, style_1, entities_1, document_1, fixes_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.parse = void 0;
@@ -1654,6 +1713,9 @@ define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/t
         };
         while (match = kMarkupPattern.exec(data)) {
             _loop_2();
+        }
+        if (options.fixRelativeUris) {
+            fixes_1.fixRelativeUris(root);
         }
         var valid = !!(stack.length === 1);
         if (!options.noFix) {
