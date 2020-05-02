@@ -8,11 +8,11 @@ import { Options } from './options';
 import { URL } from "url";
 
 export default class Document extends Node {
-	private readonly _documentURI: string;
+	private readonly _documentURI: string | undefined;
 	private _baseURI: string;
 
-	constructor(url?: string, parentNode?: Node, options?: Options) {
-		super(parentNode, options);
+	constructor(url?: string, parentNode?: Node, ownerDocument?: Node, options?: Options) {
+		super(parentNode, ownerDocument, options);
 		this._documentURI = url;
 	}
 
@@ -36,7 +36,8 @@ export default class Document extends Node {
 		if (href) {
 			try {
 				this._baseURI = (new URL(href, this._baseURI)).href;
-			} catch (ex) {/* Just fall back to documentURI */}
+			} catch (ex) {/* Just fall back to documentURI */
+			}
 		}
 		return this._baseURI
 	}
@@ -46,7 +47,7 @@ export default class Document extends Node {
 	 * @return {string} structured text
 	 */
 	public createElement(tagName: string): HTMLElement {
-		return new HTMLElement(tagName, {});
+		return new HTMLElement(tagName, {}, '', null, this.ownerDocument, this.options);
 	}
 
 	/**
@@ -54,7 +55,7 @@ export default class Document extends Node {
 	 * @return {string} structured text
 	 */
 	public createTextNode(data: string): TextNode {
-		return new TextNode(data);
+		return new TextNode(data, null, this.ownerDocument);
 	}
 
 	public get title() {

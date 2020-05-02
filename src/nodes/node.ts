@@ -19,6 +19,7 @@ export default abstract class Node {
 	nextElementSibling: Node | null = null;
 	previousElementSibling: Node | null = null;
 	tagName = '';
+	private readonly _ownerDocument: Node;
 	protected options: Options;
 
 	// Node Types
@@ -35,8 +36,9 @@ export default abstract class Node {
 	// DOCUMENT_FRAGMENT_NODE= 11;
 	// NOTATION_NODE= 12;
 
-	protected constructor(parentNode?: Node, options?: Options) {
+	protected constructor(parentNode?: Node, ownerDocument?: Node, options?: Options) {
 		this.parentNode = parentNode || null;
+		this._ownerDocument = ownerDocument || this;
 		this.options = options || {};
 		if (this.parentNode && this.parentNode.nodeType === NodeType.ELEMENT_NODE) {
 			this.parentElement = this.parentNode as HTMLElement;
@@ -46,8 +48,7 @@ export default abstract class Node {
 	abstract toString(): string;
 
 	public get ownerDocument() {
-		// todo: fix later
-		return this;
+		return this._ownerDocument;
 	}
 
 	/**

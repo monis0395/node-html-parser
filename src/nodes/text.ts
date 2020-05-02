@@ -1,14 +1,13 @@
 import NodeType from './type';
 import Node from './node';
-import { Options } from './options';
 
 /**
  * TextNode to contain a text element in DOM tree.
  * @param {string} value [description]
  */
 export default class TextNode extends Node {
-	constructor(value: string, parentNode?: Node, options?: Options) {
-		super(parentNode, options);
+	constructor(value: string, parentNode?: Node, ownerDocument?: Node) {
+		super(parentNode, ownerDocument);
 		this.rawText = value;
 	}
 
@@ -36,7 +35,7 @@ export default class TextNode extends Node {
 
 	/**
 	 * Detect if the node contains only white space.
-	 * @return {bool}
+	 * @return {boolean}
 	 */
 	get isWhitespace() {
 		return /^(\s|&nbsp;)*$/.test(this.rawText);

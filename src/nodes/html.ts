@@ -7,6 +7,7 @@ import arr_back from '../back';
 import Style from './style';
 import { decodeHTML } from 'entities';
 import { Options } from './options';
+import Document from "./document";
 
 export interface KeyAttributes {
 	id?: string;
@@ -66,12 +67,13 @@ export default class HTMLElement extends Node {
 	 * @param keyAttrs      id and class attribute
 	 * @param rawAttrs      attributes in string
 	 * @param parentNode    parent of current element
+	 * @param ownerDocument owner of current document
 	 * @param options       options which were passed while parsing
 	 *
 	 * @memberof HTMLElement
 	 */
-	public constructor(tagName: string, keyAttrs: KeyAttributes, rawAttrs?: string, parentNode?: Node, options?: Options) {
-		super(parentNode, options);
+	public constructor(tagName: string, keyAttrs: KeyAttributes, rawAttrs?: string, parentNode?: Node, ownerDocument?: Node, options?: Options) {
+		super(parentNode, ownerDocument, options);
 		this.rawAttrs = rawAttrs || '';
 		this.tagName = tagName || '';
 		this.childNodes = [];
@@ -659,9 +661,9 @@ const frameflag = 'documentfragmentcontainer';
  * @return {HTMLElement}      root element
  */
 export function parse(data: string, options = {} as Options) {
-	const root = new HTMLElement(null, {}, '', null, options);
-	let currentParent = root;
-	const stack = [root];
+	const root = new Document(options.url, null, null, options);
+	let currentParent: Node = root ;
+	const stack: Node[] = [root];
 	let lastTextPos = -1;
 	let match: RegExpExecArray;
 	// https://github.com/taoqf/node-html-parser/issues/38
@@ -671,7 +673,7 @@ export function parse(data: string, options = {} as Options) {
 			if (lastTextPos + match[0].length < kMarkupPattern.lastIndex) {
 				// if has content
 				const text = data.substring(lastTextPos, kMarkupPattern.lastIndex - match[0].length);
-				currentParent.appendChild(new TextNode(text));
+				currentParent.appendChild(new TextNode(text, currentParent, root));
 			}
 		}
 		lastTextPos = kMarkupPattern.lastIndex;
@@ -683,7 +685,7 @@ export function parse(data: string, options = {} as Options) {
 			if (options.comment) {
 				// Only keep what is in between <!-- and -->
 				const text = data.substring(lastTextPos - 3, lastTextPos - match[0].length + 4);
-				currentParent.appendChild(new CommentNode(text));
+				currentParent.appendChild(new CommentNode(text, currentParent, root));
 			}
 			continue;
 		}
@@ -712,7 +714,7 @@ export function parse(data: string, options = {} as Options) {
 			}
 			// ignore container tag we add above
 			// https://github.com/taoqf/node-html-parser/issues/38
-			currentParent = currentParent.appendChild(new HTMLElement(match[2], attrs, match[3]));
+			currentParent = currentParent.appendChild(new HTMLElement(match[2], attrs, match[3], currentParent, root, options));
 			stack.push(currentParent);
 
 			let kBlockKey = match[2];
@@ -740,7 +742,7 @@ export function parse(data: string, options = {} as Options) {
 						text = data.substring(kMarkupPattern.lastIndex, index);
 					}
 					if (text.length > 0) {
-						currentParent.appendChild(new TextNode(text));
+						currentParent.appendChild(new TextNode(text, currentParent, root));
 					}
 				}
 				if (index === -1) {
@@ -785,7 +787,8 @@ export function parse(data: string, options = {} as Options) {
 	type Response = (HTMLElement | TextNode) & { valid: boolean };
 	const valid = !!(stack.length === 1);
 	if (!options.noFix) {
-		const response = root as Response;
+		// todo: check later
+		const response = root as unknown as Response;
 		response.valid = valid;
 		while (stack.length > 1) {
 			// Handle each error elements.

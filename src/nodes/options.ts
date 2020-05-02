@@ -6,4 +6,6 @@ export interface Options {
 	style?: boolean;
 	pre?: boolean;
 	comment?: boolean;
+	url?: string;
+	fixUrls?: boolean;
 }
