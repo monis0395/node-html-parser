@@ -34,6 +34,9 @@ var Document = /** @class */ (function (_super) {
     Document.prototype.toString = function () {
         return this.childNodes.map(function (child) { return child.toString(); }).join('');
     };
+    Document.prototype.hasAttribute = function () {
+        return false;
+    };
     Object.defineProperty(Document.prototype, "documentURI", {
         get: function () {
             return this._documentURI;

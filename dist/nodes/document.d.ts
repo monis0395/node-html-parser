@@ -10,6 +10,7 @@ export default class Document extends Node {
     constructor(url?: string, parentNode?: Node, ownerDocument?: Node, options?: Options);
     nodeType: NodeType;
     toString(): string;
+    hasAttribute(): boolean;
     get documentURI(): string;
     get baseURI(): string;
     /**

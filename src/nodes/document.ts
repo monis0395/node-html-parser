@@ -22,6 +22,10 @@ export default class Document extends Node {
 		return this.childNodes.map((child) => child.toString()).join('');
 	}
 
+	public hasAttribute() {
+		return false;
+	}
+
 	get documentURI() {
 		return this._documentURI
 	}
