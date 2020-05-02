@@ -3,7 +3,7 @@ import NodeType from './type';
 import TextNode from './text';
 import Matcher from '../matcher';
 import Style from './style';
-import { Options } from './parse';
+import { Options } from './options';
 export interface KeyAttributes {
     id?: string;
     class?: string;
@@ -43,10 +43,12 @@ export default class HTMLElement extends Node {
      * @param keyAttrs      id and class attribute
      * @param rawAttrs      attributes in string
      * @param parentNode    parent of current element
+     * @param ownerDocument owner of current document
+     * @param options       options which were passed while parsing
      *
      * @memberof HTMLElement
      */
-    constructor(tagName: string, keyAttrs: KeyAttributes, rawAttrs?: string, parentNode?: Node);
+    constructor(tagName: string, keyAttrs: KeyAttributes, rawAttrs?: string, parentNode?: Node, ownerDocument?: Node, options?: Options);
     get className(): string;
     set className(names: string);
     /**
@@ -68,11 +70,6 @@ export default class HTMLElement extends Node {
     set src(str: string);
     get nodeName(): string;
     get localName(): string;
-    get title(): string;
-    get documentElement(): HTMLElement;
-    get ownerDocument(): this;
-    get head(): HTMLElement;
-    get body(): HTMLElement;
     /**
      * Get structured Text (with '\n' etc.)
      * @return {string} structured text
@@ -82,16 +79,6 @@ export default class HTMLElement extends Node {
     get innerHTML(): string;
     set innerHTML(html: string);
     set_content(content: string | Node | Node[], options?: Options): void;
-    /**
-     * Creates a new Text node.
-     * @return {string} structured text
-     */
-    createElement(tagName: string): HTMLElement;
-    /**
-     * Creates a new Text node.
-     * @return {string} structured text
-     */
-    createTextNode(data: string): TextNode;
     get outerHTML(): string;
     /**
      * Trim element from right (in block) after seeing pattern in a TextNode.
@@ -171,3 +158,15 @@ export default class HTMLElement extends Node {
     setAttributes(attributes: Attributes): void;
     insertAdjacentHTML(where: InsertPosition, html: string): void;
 }
+/**
+ * Parses HTML and returns a root element
+ * Parse a chuck of HTML source.
+ * @param  {string} data      html
+ * @param options
+ * @return {HTMLElement}      root element
+ */
+export declare function parse(data: string, options?: Options): (TextNode & {
+    valid: boolean;
+}) | (HTMLElement & {
+    valid: boolean;
+});

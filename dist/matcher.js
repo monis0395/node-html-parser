@@ -136,10 +136,11 @@ var Matcher = /** @class */ (function () {
     /**
      * Creates an instance of Matcher.
      * @param {string} selector
+     * @param {string} options
      *
      * @memberof Matcher
      */
-    function Matcher(selector) {
+    function Matcher(selector, options) {
         this.nextMatch = 0;
         functionCache.f5 = functionCache.f5;
         this.matchers = selector.split(' ').map(function (matcher) {
@@ -147,6 +148,9 @@ var Matcher = /** @class */ (function () {
                 return pMatchFunctionCache[matcher];
             var parts = matcher.split('.');
             var tagName = parts[0];
+            if (options.upperCaseTagName) {
+                tagName = tagName.toUpperCase();
+            }
             var classes = parts.slice(1).sort();
             // let source = '"use strict";';
             var function_name = 'f';

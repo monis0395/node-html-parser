@@ -24,8 +24,8 @@ var node_1 = __importDefault(require("./node"));
  */
 var TextNode = /** @class */ (function (_super) {
     __extends(TextNode, _super);
-    function TextNode(value, parentNode) {
-        var _this = _super.call(this, parentNode) || this;
+    function TextNode(value, parentNode, ownerDocument) {
+        var _this = _super.call(this, parentNode, ownerDocument) || this;
         /**
          * Node Type declaration.
          * @type {Number}
@@ -59,7 +59,7 @@ var TextNode = /** @class */ (function (_super) {
     Object.defineProperty(TextNode.prototype, "isWhitespace", {
         /**
          * Detect if the node contains only white space.
-         * @return {bool}
+         * @return {boolean}
          */
         get: function () {
             return /^(\s|&nbsp;)*$/.test(this.rawText);

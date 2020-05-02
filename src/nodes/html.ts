@@ -7,7 +7,7 @@ import arr_back from '../back';
 import Style from './style';
 import { decodeHTML } from 'entities';
 import { Options } from './options';
-import Document from "./document";
+import Document from './document';
 
 export interface KeyAttributes {
 	id?: string;
@@ -154,11 +154,6 @@ export default class HTMLElement extends Node {
 		return this.tagName.toLowerCase();
 	}
 
-	public get ownerDocument() {
-		// todo: fix later
-		return this;
-	}
-
 	/**
 	 * Get structured Text (with '\n' etc.)
 	 * @return {string} structured text
@@ -229,14 +224,19 @@ export default class HTMLElement extends Node {
 		this.set_content(html, this.options);
 	}
 
-	public set_content(content: string | Node | Node[], options = this.options as Options) {
+	public set_content(content: string | Node | Node[], options = this.options) {
 		if (content instanceof Node) {
 			content = [content];
 		} else if (typeof content == 'string') {
 			const r = parse(content, options);
 			content = r.childNodes.length ? r.childNodes : [new TextNode(content, this)];
+			this.children = r.children;
 		}
 		this.childNodes = content;
+		for (let i = this.childNodes.length; --i >= 0;) {
+			this.childNodes[i].parentNode = this;
+			this.childNodes[i].parentElement = this;
+		}
 	}
 
 	public get outerHTML() {
@@ -369,7 +369,7 @@ export default class HTMLElement extends Node {
 					}, pre);
 				}, new Set<HTMLElement>()));
 			}
-			matcher = new Matcher(selector);
+			matcher = new Matcher(selector, this.options);
 		}
 
 		interface IStack {
@@ -428,7 +428,7 @@ export default class HTMLElement extends Node {
 			matcher = selector;
 			matcher.reset();
 		} else {
-			matcher = new Matcher(selector);
+			matcher = new Matcher(selector, this.options);
 		}
 		const stack = [] as { 0: Node; 1: 0 | 1; 2: boolean }[];
 		for (const node of this.childNodes) {

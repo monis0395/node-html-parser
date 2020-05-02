@@ -1,4 +1,5 @@
 import HTMLElement from './nodes/html';
+import { Options } from './nodes/options';
 
 interface MatherFunction {
 	func(el: HTMLElement, tagName: string, classes: string[] | string, attr_key: string, value: string): boolean;
@@ -148,16 +149,20 @@ export default class Matcher {
 	/**
 	 * Creates an instance of Matcher.
 	 * @param {string} selector
+	 * @param {string} options
 	 *
 	 * @memberof Matcher
 	 */
-	constructor(selector: string) {
+	constructor(selector: string, options?: Options) {
 		functionCache.f5 = functionCache.f5;
 		this.matchers = selector.split(' ').map((matcher) => {
 			if (pMatchFunctionCache[matcher])
 				return pMatchFunctionCache[matcher];
 			const parts = matcher.split('.');
-			const tagName = parts[0];
+			let tagName = parts[0];
+			if (options.upperCaseTagName) {
+				tagName = tagName.toUpperCase();
+			}
 			const classes = parts.slice(1).sort();
 			// let source = '"use strict";';
 			let function_name = 'f';

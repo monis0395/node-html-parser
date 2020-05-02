@@ -5,7 +5,7 @@ import Node from './node';
  * @param {string} value [description]
  */
 export default class TextNode extends Node {
-    constructor(value: string, parentNode?: Node);
+    constructor(value: string, parentNode?: Node, ownerDocument?: Node);
     /**
      * Node Type declaration.
      * @type {Number}
@@ -23,7 +23,7 @@ export default class TextNode extends Node {
     get textContent(): string;
     /**
      * Detect if the node contains only white space.
-     * @return {bool}
+     * @return {boolean}
      */
     get isWhitespace(): boolean;
     toString(): string;

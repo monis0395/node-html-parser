@@ -22,20 +22,6 @@ export default abstract class Node {
 	private readonly _ownerDocument: Node;
 	protected options: Options;
 
-	// Node Types
-	// ELEMENT_NODE= 1;
-	// ATTRIBUTE_NODE= 2;
-	// TEXT_NODE= 3;
-	// CDATA_SECTION_NODE= 4;
-	// ENTITY_REFERENCE_NODE= 5;
-	// ENTITY_NODE= 6;
-	// PROCESSING_INSTRUCTION_NODE= 7;
-	// COMMENT_NODE= 8;
-	// DOCUMENT_NODE= 9;
-	// DOCUMENT_TYPE_NODE= 10;
-	// DOCUMENT_FRAGMENT_NODE= 11;
-	// NOTATION_NODE= 12;
-
 	protected constructor(parentNode?: Node, ownerDocument?: Node, options?: Options) {
 		this.parentNode = parentNode || null;
 		this._ownerDocument = ownerDocument || this;
@@ -89,7 +75,9 @@ export default abstract class Node {
 	 */
 	public removeChild(child: Node) {
 		const childIndex = this.childNodes.indexOf(child);
-
+		if (childIndex === -1) {
+			throw new Error('removeChild: node not found');
+		}
 		child.parentNode = null;
 
 		const previousSibling = child.previousSibling || null;
@@ -165,14 +153,11 @@ export default abstract class Node {
 	 * @param {HTMLElement} newNode     new node
 	 */
 	public exchangeChild(oldNode: Node, newNode: Node) {
-		let idx = -1;
-		for (let i = 0; i < this.childNodes.length; i++) {
-			if (this.childNodes[i] === oldNode) {
-				idx = i;
-				break;
-			}
+		const childIndex = this.childNodes.indexOf(oldNode);
+		if (childIndex === -1) {
+			throw new Error('replaceChild: node not found');
 		}
-		this.childNodes[idx] = newNode;
+		this.childNodes[childIndex] = newNode;
 
 		const previousSibling = oldNode.previousSibling || null;
 		const nextSibling = oldNode.nextSibling || null;
@@ -205,6 +190,7 @@ export default abstract class Node {
 			if (nextSibling) {
 				nextSibling.previousElementSibling = newNode;
 			}
+			this.children.splice(this.children.indexOf(oldNode), 1);
 		}
 	}
 
@@ -217,4 +203,8 @@ export default abstract class Node {
 		this.exchangeChild(oldNode, newNode);
 		return oldNode;
 	}
+}
+
+for (const nodeType in NodeType) {
+	Node[nodeType] = Node.prototype[nodeType] = NodeType[nodeType];
 }

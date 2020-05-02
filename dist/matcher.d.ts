@@ -1,4 +1,5 @@
 import HTMLElement from './nodes/html';
+import { Options } from './nodes/options';
 /**
  * Matcher class to make CSS match
  *
@@ -10,10 +11,11 @@ export default class Matcher {
     /**
      * Creates an instance of Matcher.
      * @param {string} selector
+     * @param {string} options
      *
      * @memberof Matcher
      */
-    constructor(selector: string);
+    constructor(selector: string, options?: Options);
     /**
      * Trying to advance match pointer
      * @param  {HTMLElement} el element to make the match

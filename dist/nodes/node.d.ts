@@ -1,5 +1,6 @@
 import NodeType from './type';
 import HTMLElement from './html';
+import { Options } from './options';
 /**
  * Node Class as base class for TextNode and HTMLElement.
  */
@@ -16,8 +17,11 @@ export default abstract class Node {
     nextElementSibling: Node | null;
     previousElementSibling: Node | null;
     tagName: string;
-    protected constructor(parentNode?: Node);
+    private readonly _ownerDocument;
+    protected options: Options;
+    protected constructor(parentNode?: Node, ownerDocument?: Node, options?: Options);
     abstract toString(): string;
+    get ownerDocument(): Node;
     /**
      * Get first child node
      * @return {Node} first child node

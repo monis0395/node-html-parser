@@ -1,7 +1,7 @@
 import Node from './node';
 import NodeType from './type';
 export default class CommentNode extends Node {
-    constructor(value: string, parentNode?: Node);
+    constructor(value: string, parentNode?: Node, ownerDocument?: Node);
     /**
      * Node Type declaration.
      * @type {Number}

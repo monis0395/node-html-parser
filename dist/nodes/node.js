@@ -9,20 +9,7 @@ var back_1 = __importDefault(require("../back"));
  * Node Class as base class for TextNode and HTMLElement.
  */
 var Node = /** @class */ (function () {
-    // Node Types
-    // ELEMENT_NODE= 1;
-    // ATTRIBUTE_NODE= 2;
-    // TEXT_NODE= 3;
-    // CDATA_SECTION_NODE= 4;
-    // ENTITY_REFERENCE_NODE= 5;
-    // ENTITY_NODE= 6;
-    // PROCESSING_INSTRUCTION_NODE= 7;
-    // COMMENT_NODE= 8;
-    // DOCUMENT_NODE= 9;
-    // DOCUMENT_TYPE_NODE= 10;
-    // DOCUMENT_FRAGMENT_NODE= 11;
-    // NOTATION_NODE= 12;
-    function Node(parentNode) {
+    function Node(parentNode, ownerDocument, options) {
         this.childNodes = [];
         this.children = [];
         this.parentNode = null;
@@ -33,10 +20,19 @@ var Node = /** @class */ (function () {
         this.previousElementSibling = null;
         this.tagName = '';
         this.parentNode = parentNode || null;
+        this._ownerDocument = ownerDocument || this;
+        this.options = options || {};
         if (this.parentNode && this.parentNode.nodeType === type_1.default.ELEMENT_NODE) {
             this.parentElement = this.parentNode;
         }
     }
+    Object.defineProperty(Node.prototype, "ownerDocument", {
+        get: function () {
+            return this._ownerDocument;
+        },
+        enumerable: false,
+        configurable: true
+    });
     Object.defineProperty(Node.prototype, "firstChild", {
         /**
          * Get first child node
@@ -87,6 +83,9 @@ var Node = /** @class */ (function () {
      */
     Node.prototype.removeChild = function (child) {
         var childIndex = this.childNodes.indexOf(child);
+        if (childIndex === -1) {
+            throw new Error('removeChild: node not found');
+        }
         child.parentNode = null;
         var previousSibling = child.previousSibling || null;
         var nextSibling = child.nextSibling || null;
@@ -154,14 +153,11 @@ var Node = /** @class */ (function () {
      * @param {HTMLElement} newNode     new node
      */
     Node.prototype.exchangeChild = function (oldNode, newNode) {
-        var idx = -1;
-        for (var i = 0; i < this.childNodes.length; i++) {
-            if (this.childNodes[i] === oldNode) {
-                idx = i;
-                break;
-            }
+        var childIndex = this.childNodes.indexOf(oldNode);
+        if (childIndex === -1) {
+            throw new Error('replaceChild: node not found');
         }
-        this.childNodes[idx] = newNode;
+        this.childNodes[childIndex] = newNode;
         var previousSibling = oldNode.previousSibling || null;
         var nextSibling = oldNode.nextSibling || null;
         newNode.previousSibling = previousSibling;
@@ -189,6 +185,7 @@ var Node = /** @class */ (function () {
             if (nextSibling) {
                 nextSibling.previousElementSibling = newNode;
             }
+            this.children.splice(this.children.indexOf(oldNode), 1);
         }
     };
     /**
@@ -203,3 +200,6 @@ var Node = /** @class */ (function () {
     return Node;
 }());
 exports.default = Node;
+for (var nodeType in type_1.default) {
+    Node[nodeType] = Node.prototype[nodeType] = type_1.default[nodeType];
+}

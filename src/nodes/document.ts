@@ -2,10 +2,10 @@ import Node from './node';
 import NodeType from './type';
 import TextNode from './text';
 import HTMLElement from './html';
-import Matcher from "../matcher";
-import arr_back from "../back";
+import Matcher from '../matcher';
+import arr_back from '../back';
 import { Options } from './options';
-import { URL } from "url";
+import { URL } from 'url';
 
 export default class Document extends Node {
 	private readonly _documentURI: string | undefined;
@@ -27,12 +27,12 @@ export default class Document extends Node {
 	}
 
 	get baseURI() {
-		if (this._baseURI || this._baseURI === "") {
+		if (this._baseURI || this._baseURI === '') {
 			return this._baseURI;
 		}
 		this._baseURI = this._documentURI;
-		const baseElements = this.getElementsByTagName("base");
-		const href = baseElements[0] && baseElements[0].getAttribute("href");
+		const baseElements = this.getElementsByTagName('base');
+		const href = baseElements[0] && baseElements[0].getAttribute('href');
 		if (href) {
 			try {
 				this._baseURI = (new URL(href, this._baseURI)).href;
@@ -64,7 +64,7 @@ export default class Document extends Node {
 	}
 
 	public get documentElement() {
-		return this.getElementsByTagName('html')[0];
+		return this;
 	}
 
 	public get head() {
@@ -126,7 +126,7 @@ export default class Document extends Node {
 					}, pre);
 				}, new Set<HTMLElement>()));
 			}
-			matcher = new Matcher(selector);
+			matcher = new Matcher(selector, this.options);
 		}
 
 		interface IStack {
@@ -185,7 +185,7 @@ export default class Document extends Node {
 			matcher = selector;
 			matcher.reset();
 		} else {
-			matcher = new Matcher(selector);
+			matcher = new Matcher(selector, this.options);
 		}
 		const stack = [] as { 0: Node; 1: 0 | 1; 2: boolean }[];
 		for (const node of this.childNodes) {
