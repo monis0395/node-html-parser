@@ -124,10 +124,12 @@ export default abstract class Node {
 			lastNode.nextSibling = node;
 		}
 		node.previousSibling = lastNode;
+		node.nextSibling = null;
 
 		if (node.nodeType === NodeType.ELEMENT_NODE) {
 			const lastElement = this.lastElementChild;
 			node.previousElementSibling = lastElement;
+			node.nextElementSibling = null;
 			this.children.push(node);
 			if (lastElement) {
 				lastElement.nextElementSibling = node;

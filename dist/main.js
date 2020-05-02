@@ -1605,9 +1605,11 @@ define("nodes/node", ["require", "exports", "nodes/type", "back"], function (req
                 lastNode.nextSibling = node;
             }
             node.previousSibling = lastNode;
+            node.nextSibling = null;
             if (node.nodeType === type_3.default.ELEMENT_NODE) {
                 var lastElement = this.lastElementChild;
                 node.previousElementSibling = lastElement;
+                node.nextElementSibling = null;
                 this.children.push(node);
                 if (lastElement) {
                     lastElement.nextElementSibling = node;

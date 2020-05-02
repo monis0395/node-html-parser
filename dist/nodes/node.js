@@ -125,9 +125,11 @@ var Node = /** @class */ (function () {
             lastNode.nextSibling = node;
         }
         node.previousSibling = lastNode;
+        node.nextSibling = null;
         if (node.nodeType === type_1.default.ELEMENT_NODE) {
             var lastElement = this.lastElementChild;
             node.previousElementSibling = lastElement;
+            node.nextElementSibling = null;
             this.children.push(node);
             if (lastElement) {
                 lastElement.nextElementSibling = node;
