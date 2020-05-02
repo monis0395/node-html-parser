@@ -9,15 +9,30 @@ import HTMLElement from './html';
 export default abstract class Node {
     nodeType: NodeType;
     childNodes = [] as Node[];
+    children = [] as Node[];
     text: string;
     rawText: string;
-    parentNode: Node | null;
-    parentElement: HTMLElement | null;
-    nextSibling: Node | null;
-    previousSibling: Node | null;
-    nextElementSibling: Node | null;
-    previousElementSibling: Node | null;
+    parentNode: Node | null = null;
+    parentElement: HTMLElement | null = null;
+    nextSibling: Node | null = null;
+    previousSibling: Node | null = null;
+    nextElementSibling: Node | null = null;
+    previousElementSibling: Node | null = null;
     tagName = '';
+
+    // Node Types
+    ELEMENT_NODE= 1;
+    ATTRIBUTE_NODE= 2;
+    TEXT_NODE= 3;
+    CDATA_SECTION_NODE= 4;
+    ENTITY_REFERENCE_NODE= 5;
+    ENTITY_NODE= 6;
+    PROCESSING_INSTRUCTION_NODE= 7;
+    COMMENT_NODE= 8;
+    DOCUMENT_NODE= 9;
+    DOCUMENT_TYPE_NODE= 10;
+    DOCUMENT_FRAGMENT_NODE= 11;
+    NOTATION_NODE= 12;
 
     protected constructor(parentNode?: Node) {
         this.parentNode = parentNode || null;
@@ -27,10 +42,6 @@ export default abstract class Node {
     }
 
     abstract toString(): string;
-
-    get children() {
-        return this.childNodes.filter((node) => node.nodeType === NodeType.ELEMENT_NODE);
-    }
 
     get childElementCount() {
         return this.childNodes.length;
@@ -55,6 +66,14 @@ export default abstract class Node {
     }
 
     /**
+     * Get first child element
+     * @return {Node} first child element
+     */
+    public get firstElementChild() {
+        return this.children[0];
+    }
+
+    /**
      * Get last child node
      * @return {Node} last child node
      */
@@ -63,45 +82,24 @@ export default abstract class Node {
     }
 
     /**
-     * Get first child element
-     * @return {Node} first child element
-     */
-    public get firstElementChild() {
-        return this.childNodes.find((node) => node.nodeType === NodeType.ELEMENT_NODE) || null;
-    }
-
-    /**
      * Get last child element
      * @return {Node} last child element
      */
     public get lastElementChild() {
-        let idx;
-        for (let i = this.childNodes.length - 1; i > -1; i--) {
-            if (this.childNodes[i].nodeType === NodeType.ELEMENT_NODE) {
-                idx = i;
-                break;
-            }
-        }
-        return this.childNodes[idx] || null;
+        return arr_back(this.children) || null;
     }
 
     /**
      * Remove Child element from childNodes array
-     * @param {HTMLElement} node     node to remove
+     * @param {HTMLElement} child     node to remove
      */
-    public removeChild(node: Node) {
-        const len = this.childNodes.length;
-        for (let i = 0; i < len; i++) {
-            if (this.childNodes[i] === node) {
-                // dont not use array.filter
-                // this is necessary to handle pass by reference cases
-                this.childNodes.splice(i, 1);
-                break;
-            }
-        }
+    public removeChild(child: Node) {
+        const childIndex = this.childNodes.indexOf(child);
 
-        const previousSibling = node.previousSibling || null;
-        const nextSibling = node.nextSibling || null;
+        child.parentNode = null;
+
+        const previousSibling = child.previousSibling || null;
+        const nextSibling = child.nextSibling || null;
         if (previousSibling) {
             previousSibling.nextSibling = nextSibling;
         }
@@ -109,14 +107,22 @@ export default abstract class Node {
             nextSibling.previousSibling = previousSibling;
         }
 
-        const previousElementSibling = node.previousElementSibling || null;
-        const nextElementSibling = node.nextElementSibling || null;
-        if (previousElementSibling) {
-            previousElementSibling.nextElementSibling = nextElementSibling;
+        if (child.nodeType === NodeType.ELEMENT_NODE) {
+            const previousElementSibling = child.previousElementSibling || null;
+            const nextElementSibling = child.nextElementSibling || null;
+            if (previousElementSibling) {
+                previousElementSibling.nextElementSibling = nextElementSibling;
+            }
+            if (nextElementSibling) {
+                nextElementSibling.previousElementSibling = previousElementSibling;
+            }
+            this.children.splice(this.children.indexOf(child), 1);
         }
-        if (nextElementSibling) {
-            nextElementSibling.previousElementSibling = previousElementSibling;
-        }
+
+        child.previousSibling = child.nextSibling = null;
+        child.previousElementSibling = child.nextElementSibling = null;
+
+        return this.childNodes.splice(childIndex, 1);
     }
 
     /**
@@ -128,22 +134,23 @@ export default abstract class Node {
         if (node.parentNode) {
             node.parentNode.removeChild(node);
         }
-        const lastNode = this.childNodes[this.childNodes.length - 1] || null;
+        const lastNode = this.lastChild;
         if (lastNode) {
             lastNode.nextSibling = node;
         }
         node.previousSibling = lastNode;
-        node.nextSibling = null;
 
-        const lastElement = this.children[this.children.length - 1] || null;
-        if (lastElement && node.nodeType === NodeType.ELEMENT_NODE) {
-            lastElement.nextElementSibling = node;
+        if (node.nodeType === NodeType.ELEMENT_NODE) {
+            const lastElement = this.lastElementChild;
+            node.previousElementSibling = lastElement;
+            this.children.push(node);
+            if (lastElement) {
+                lastElement.nextElementSibling = node;
+            }
+            if (lastNode) {
+                lastNode.nextElementSibling = node;
+            }
         }
-        if (lastNode && node.nodeType === NodeType.ELEMENT_NODE) {
-            lastNode.nextElementSibling = node;
-        }
-        node.previousElementSibling = lastElement;
-        node.nextElementSibling = null;
 
         this.childNodes.push(node);
 
