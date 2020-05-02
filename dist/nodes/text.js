@@ -24,8 +24,8 @@ var node_1 = __importDefault(require("./node"));
  */
 var TextNode = /** @class */ (function (_super) {
     __extends(TextNode, _super);
-    function TextNode(value) {
-        var _this = _super.call(this) || this;
+    function TextNode(value, parentNode) {
+        var _this = _super.call(this, parentNode) || this;
         /**
          * Node Type declaration.
          * @type {Number}

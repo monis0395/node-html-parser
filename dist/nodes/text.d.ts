@@ -5,7 +5,7 @@ import Node from './node';
  * @param {string} value [description]
  */
 export default class TextNode extends Node {
-    constructor(value: string);
+    constructor(value: string, parentNode?: Node);
     /**
      * Node Type declaration.
      * @type {Number}

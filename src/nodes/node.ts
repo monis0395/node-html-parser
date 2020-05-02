@@ -1,6 +1,7 @@
 import NodeType from './type';
 import arr_back from '../back';
 import { decode } from 'he';
+import HTMLElement from './html';
 
 /**
  * Node Class as base class for TextNode and HTMLElement.
@@ -11,11 +12,19 @@ export default abstract class Node {
     text: string;
     rawText: string;
     parentNode: Node | null;
+    parentElement: HTMLElement | null;
     nextSibling: Node | null;
     previousSibling: Node | null;
     nextElementSibling: Node | null;
     previousElementSibling: Node | null;
     tagName = '';
+
+    protected constructor(parentNode?: Node) {
+        this.parentNode = parentNode || null;
+        if (this.parentNode && this.parentNode.nodeType === NodeType.ELEMENT_NODE) {
+            this.parentElement = this.parentNode as HTMLElement;
+        }
+    }
 
     abstract toString(): string;
 
@@ -139,6 +148,11 @@ export default abstract class Node {
         this.childNodes.push(node);
 
         node.parentNode = this;
+        if (this.nodeType === NodeType.ELEMENT_NODE) {
+            node.parentElement = node.parentNode as HTMLElement;
+        } else {
+            node.parentElement = this.parentElement;
+        }
         return node;
     }
 

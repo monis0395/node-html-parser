@@ -20,8 +20,8 @@ var node_1 = __importDefault(require("./node"));
 var type_1 = __importDefault(require("./type"));
 var CommentNode = /** @class */ (function (_super) {
     __extends(CommentNode, _super);
-    function CommentNode(value) {
-        var _this = _super.call(this) || this;
+    function CommentNode(value, parentNode) {
+        var _this = _super.call(this, parentNode) || this;
         /**
          * Node Type declaration.
          * @type {Number}

@@ -10,9 +10,13 @@ var he_1 = require("he");
  * Node Class as base class for TextNode and HTMLElement.
  */
 var Node = /** @class */ (function () {
-    function Node() {
+    function Node(parentNode) {
         this.childNodes = [];
         this.tagName = '';
+        this.parentNode = parentNode || null;
+        if (this.parentNode && this.parentNode.nodeType === type_1.default.ELEMENT_NODE) {
+            this.parentElement = this.parentNode;
+        }
     }
     Object.defineProperty(Node.prototype, "children", {
         get: function () {
@@ -149,6 +153,12 @@ var Node = /** @class */ (function () {
         node.nextElementSibling = null;
         this.childNodes.push(node);
         node.parentNode = this;
+        if (this.nodeType === type_1.default.ELEMENT_NODE) {
+            node.parentElement = node.parentNode;
+        }
+        else {
+            node.parentElement = this.parentElement;
+        }
         return node;
     };
     /**

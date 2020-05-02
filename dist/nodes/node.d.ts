@@ -1,4 +1,5 @@
 import NodeType from './type';
+import HTMLElement from './html';
 /**
  * Node Class as base class for TextNode and HTMLElement.
  */
@@ -8,11 +9,13 @@ export default abstract class Node {
     text: string;
     rawText: string;
     parentNode: Node | null;
+    parentElement: HTMLElement | null;
     nextSibling: Node | null;
     previousSibling: Node | null;
     nextElementSibling: Node | null;
     previousElementSibling: Node | null;
     tagName: string;
+    protected constructor(parentNode?: Node);
     abstract toString(): string;
     get children(): Node[];
     get childElementCount(): number;

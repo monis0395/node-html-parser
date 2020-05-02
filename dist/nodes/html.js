@@ -58,7 +58,7 @@ var HTMLElement = /** @class */ (function (_super) {
      * @memberof HTMLElement
      */
     function HTMLElement(tagName, keyAttrs, rawAttrs, parentNode) {
-        var _this = _super.call(this) || this;
+        var _this = _super.call(this, parentNode) || this;
         _this.classNames = [];
         _this.parentElement = null;
         _this.parentNode = null;
@@ -67,11 +67,7 @@ var HTMLElement = /** @class */ (function (_super) {
          */
         _this.nodeType = type_1.default.ELEMENT_NODE;
         _this.rawAttrs = rawAttrs || '';
-        _this.parentNode = parentNode || null;
         _this.tagName = tagName || '';
-        if (_this.parentNode && _this.parentNode.nodeType === type_1.default.ELEMENT_NODE) {
-            _this.parentElement = _this.parentNode;
-        }
         _this.childNodes = [];
         if (keyAttrs.id) {
             _this.id = keyAttrs.id;
@@ -263,7 +259,7 @@ var HTMLElement = /** @class */ (function (_super) {
         }
         else if (typeof content == 'string') {
             var r = parse(content, options);
-            content = r.childNodes.length ? r.childNodes : [new text_1.default(content)];
+            content = r.childNodes.length ? r.childNodes : [new text_1.default(content, this)];
         }
         this.childNodes = content;
     };

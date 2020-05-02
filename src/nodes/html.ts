@@ -69,13 +69,9 @@ export default class HTMLElement extends Node {
      * @memberof HTMLElement
      */
     public constructor(tagName: string, keyAttrs: KeyAttributes, rawAttrs?: string, parentNode?: Node) {
-        super();
+        super(parentNode);
         this.rawAttrs = rawAttrs || '';
-        this.parentNode = parentNode || null;
         this.tagName = tagName || '';
-        if (this.parentNode && this.parentNode.nodeType === NodeType.ELEMENT_NODE) {
-            this.parentElement = this.parentNode as HTMLElement;
-        }
         this.childNodes = [];
         if (keyAttrs.id) {
             this.id = keyAttrs.id;
@@ -229,7 +225,7 @@ export default class HTMLElement extends Node {
             content = [content];
         } else if (typeof content == 'string') {
             const r = parse(content, options);
-            content = r.childNodes.length ? r.childNodes : [new TextNode(content)];
+            content = r.childNodes.length ? r.childNodes : [new TextNode(content, this)];
         }
         this.childNodes = content;
     }
