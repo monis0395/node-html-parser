@@ -104,7 +104,7 @@ var functionCache = {
         'use strict';
         tagName = tagName || '';
         classes = classes || [];
-        if (el.tagName !== tagName) {
+        if (el.ogTagName !== tagName) {
             return false;
         }
         for (var cls = classes, i = 0; i < cls.length; i++) {
@@ -117,12 +117,12 @@ var functionCache = {
     f35: function (el, tagName) {
         'use strict';
         tagName = tagName || '';
-        return el.tagName === tagName;
+        return el.ogTagName === tagName;
     },
     f3: function (el, tagName) {
         'use strict';
         tagName = tagName || '';
-        if (el.tagName !== tagName) {
+        if (el.ogTagName !== tagName) {
             return false;
         }
     }
@@ -159,7 +159,7 @@ var Matcher = /** @class */ (function () {
             if (tagName && tagName !== '*') {
                 var reg = void 0;
                 if (tagName.startsWith('#')) {
-                    // source += 'if (el.id != ' + JSON.stringify(tagName.substr(1)) + ') return false;';// 1
+                    // source += 'if (el.id != ' + JSON.stringify(ogTagName.substr(1)) + ') return false;';// 1
                     function_name += '1';
                 }
                 else {
@@ -182,7 +182,7 @@ var Matcher = /** @class */ (function () {
                         function_name += '5';
                     }
                     else {
-                        // source += 'if (el.tagName != ' + JSON.stringify(tagName) + ') return false;';// 3
+                        // source += 'if (el.ogTagName != ' + JSON.stringify(ogTagName) + ') return false;';// 3
                         function_name += '3';
                     }
                 }

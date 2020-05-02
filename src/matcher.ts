@@ -114,7 +114,7 @@ const functionCache = {
 		'use strict';
 		tagName = tagName || '';
 		classes = classes || [];
-		if (el.tagName !== tagName) {
+		if (el.ogTagName !== tagName) {
 			return false;
 		}
 		for (let cls = classes, i = 0; i < cls.length; i++) {
@@ -127,12 +127,12 @@ const functionCache = {
 	f35(el: HTMLElement, tagName: string) {
 		'use strict';
 		tagName = tagName || '';
-		return el.tagName === tagName;
+		return el.ogTagName === tagName;
 	},
 	f3(el: HTMLElement, tagName: string) {
 		'use strict';
 		tagName = tagName || '';
-		if (el.tagName !== tagName) {
+		if (el.ogTagName !== tagName) {
 			return false;
 		}
 	}
@@ -171,7 +171,7 @@ export default class Matcher {
 			if (tagName && tagName !== '*') {
 				let reg: RegExpMatchArray;
 				if (tagName.startsWith('#')) {
-					// source += 'if (el.id != ' + JSON.stringify(tagName.substr(1)) + ') return false;';// 1
+					// source += 'if (el.id != ' + JSON.stringify(ogTagName.substr(1)) + ') return false;';// 1
 					function_name += '1';
 				} else {
 					reg = /^\[\s*(\S+)\s*(=|!=)\s*((((["'])([^\6]*)\6))|(\S*?))\]\s*/.exec(tagName);
@@ -194,7 +194,7 @@ export default class Matcher {
 						function_name += '5';
 
 					} else {
-						// source += 'if (el.tagName != ' + JSON.stringify(tagName) + ') return false;';// 3
+						// source += 'if (el.ogTagName != ' + JSON.stringify(ogTagName) + ') return false;';// 3
 						function_name += '3';
 					}
 				}

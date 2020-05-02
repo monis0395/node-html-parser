@@ -70,6 +70,7 @@ export default class HTMLElement extends Node {
     set src(str: string);
     get nodeName(): string;
     get localName(): string;
+    get tagName(): string;
     /**
      * Get structured Text (with '\n' etc.)
      * @return {string} structured text

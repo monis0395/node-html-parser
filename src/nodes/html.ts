@@ -5,7 +5,7 @@ import CommentNode from './comment';
 import Matcher from '../matcher';
 import arr_back from '../back';
 import Style from './style';
-import { decodeHTML } from 'entities';
+import { decode as decodeHTML } from 'he';
 import { Options } from './options';
 import Document from './document';
 import { fixRelativeUris } from './fixes';
@@ -76,7 +76,7 @@ export default class HTMLElement extends Node {
 	public constructor(tagName: string, keyAttrs: KeyAttributes, rawAttrs?: string, parentNode?: Node, ownerDocument?: Node, options?: Options) {
 		super(parentNode, ownerDocument, options);
 		this.rawAttrs = rawAttrs || '';
-		this.tagName = tagName || '';
+		this.ogTagName = tagName || '';
 		this.childNodes = [];
 		if (keyAttrs.id) {
 			this.id = keyAttrs.id;
@@ -148,11 +148,18 @@ export default class HTMLElement extends Node {
 	}
 
 	public get nodeName() {
-		return this.tagName;
+		return this.ogTagName;
 	}
 
 	public get localName() {
-		return this.tagName.toLowerCase();
+		return this.ogTagName.toLowerCase();
+	}
+
+	public get tagName() {
+		if (this.options.upperCaseTagNameAccess) {
+			return this.ogTagName.toUpperCase();
+		}
+		return this.ogTagName;
 	}
 
 	/**
@@ -165,7 +172,7 @@ export default class HTMLElement extends Node {
 
 		function dfs(node: Node) {
 			if (node.nodeType === NodeType.ELEMENT_NODE) {
-				if (kBlockElements[(node as HTMLElement).tagName]) {
+				if (kBlockElements[(node as HTMLElement).ogTagName]) {
 					if (currentBlock.length > 0) {
 						blocks.push(currentBlock = []);
 					}
@@ -201,7 +208,7 @@ export default class HTMLElement extends Node {
 	}
 
 	public toString() {
-		const tag = this.tagName;
+		const tag = this.ogTagName;
 		if (tag) {
 			const is_void = /^(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)$/i.test(tag);
 			const attrs = this.rawAttrs ? ' ' + this.rawAttrs : '';
@@ -281,7 +288,7 @@ export default class HTMLElement extends Node {
 		function dfs(node: HTMLElement) {
 			const idStr = node.id ? ('#' + node.id) : '';
 			const classStr = node.classNames.length ? ('.' + node.classNames.join('.')) : '';
-			write(node.tagName + idStr + classStr);
+			write(node.ogTagName + idStr + classStr);
 			indention++;
 			node.childNodes.forEach((childNode) => {
 				if (childNode.nodeType === NodeType.ELEMENT_NODE) {
@@ -703,7 +710,7 @@ export function parse(data: string, options = {} as Options) {
 				attrs[attMatch[2]] = attMatch[4] || attMatch[5] || attMatch[6];
 			}
 
-			let tagName = currentParent.tagName;
+			let tagName = currentParent.ogTagName;
 			if (options.upperCaseTagName) {
 				tagName = tagName.toLowerCase();
 			}
@@ -762,12 +769,12 @@ export function parse(data: string, options = {} as Options) {
 		if (match[1] || match[4] || kSelfClosingElements[key]) {
 			// </ or /> or <br> etc.
 			while (true) {
-				if (currentParent.tagName === match[2]) {
+				if (currentParent.ogTagName === match[2]) {
 					stack.pop();
 					currentParent = arr_back(stack);
 					break;
 				} else {
-					let tagName = currentParent.tagName;
+					let tagName = currentParent.ogTagName;
 					if (options.upperCaseTagName) {
 						tagName = tagName.toLowerCase();
 					}
@@ -799,7 +806,7 @@ export function parse(data: string, options = {} as Options) {
 			const last = stack.pop();
 			const oneBefore = arr_back(stack);
 			if (last.parentNode && (last.parentNode as HTMLElement).parentNode) {
-				if (last.parentNode === oneBefore && last.tagName === oneBefore.tagName) {
+				if (last.parentNode === oneBefore && last.ogTagName === oneBefore.ogTagName) {
 					// Pair error case <h3> <h3> handle : Fixes to <h3> </h3>
 					oneBefore.removeChild(last);
 					last.childNodes.forEach((child) => {

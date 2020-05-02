@@ -214,7 +214,7 @@ define("matcher", ["require", "exports"], function (require, exports) {
             'use strict';
             tagName = tagName || '';
             classes = classes || [];
-            if (el.tagName !== tagName) {
+            if (el.ogTagName !== tagName) {
                 return false;
             }
             for (var cls = classes, i = 0; i < cls.length; i++) {
@@ -227,12 +227,12 @@ define("matcher", ["require", "exports"], function (require, exports) {
         f35: function (el, tagName) {
             'use strict';
             tagName = tagName || '';
-            return el.tagName === tagName;
+            return el.ogTagName === tagName;
         },
         f3: function (el, tagName) {
             'use strict';
             tagName = tagName || '';
-            if (el.tagName !== tagName) {
+            if (el.ogTagName !== tagName) {
                 return false;
             }
         }
@@ -269,7 +269,7 @@ define("matcher", ["require", "exports"], function (require, exports) {
                 if (tagName && tagName !== '*') {
                     var reg = void 0;
                     if (tagName.startsWith('#')) {
-                        // source += 'if (el.id != ' + JSON.stringify(tagName.substr(1)) + ') return false;';// 1
+                        // source += 'if (el.id != ' + JSON.stringify(ogTagName.substr(1)) + ') return false;';// 1
                         function_name += '1';
                     }
                     else {
@@ -292,7 +292,7 @@ define("matcher", ["require", "exports"], function (require, exports) {
                             function_name += '5';
                         }
                         else {
-                            // source += 'if (el.tagName != ' + JSON.stringify(tagName) + ') return false;';// 3
+                            // source += 'if (el.ogTagName != ' + JSON.stringify(ogTagName) + ') return false;';// 3
                             function_name += '3';
                         }
                     }
@@ -909,7 +909,7 @@ define("nodes/fixes", ["require", "exports", "url"], function (require, exports,
     }
     exports.fixRelativeUris = fixRelativeUris;
 });
-define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/text", "nodes/comment", "matcher", "back", "nodes/style", "entities", "nodes/document", "nodes/fixes"], function (require, exports, node_3, type_3, text_2, comment_1, matcher_2, back_2, style_1, entities_1, document_1, fixes_1) {
+define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/text", "nodes/comment", "matcher", "back", "nodes/style", "he", "nodes/document", "nodes/fixes"], function (require, exports, node_3, type_3, text_2, comment_1, matcher_2, back_2, style_1, he_1, document_1, fixes_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.parse = void 0;
@@ -965,7 +965,7 @@ define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/t
              */
             _this.nodeType = type_3.default.ELEMENT_NODE;
             _this.rawAttrs = rawAttrs || '';
-            _this.tagName = tagName || '';
+            _this.ogTagName = tagName || '';
             _this.childNodes = [];
             if (keyAttrs.id) {
                 _this.id = keyAttrs.id;
@@ -1011,7 +1011,7 @@ define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/t
              * @return {string} text content
              */
             get: function () {
-                return entities_1.decodeHTML(this.rawText);
+                return he_1.decode(this.rawText);
             },
             enumerable: false,
             configurable: true
@@ -1055,14 +1055,24 @@ define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/t
         });
         Object.defineProperty(HTMLElement.prototype, "nodeName", {
             get: function () {
-                return this.tagName;
+                return this.ogTagName;
             },
             enumerable: false,
             configurable: true
         });
         Object.defineProperty(HTMLElement.prototype, "localName", {
             get: function () {
-                return this.tagName.toLowerCase();
+                return this.ogTagName.toLowerCase();
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(HTMLElement.prototype, "tagName", {
+            get: function () {
+                if (this.options.upperCaseTagNameAccess) {
+                    return this.ogTagName.toUpperCase();
+                }
+                return this.ogTagName;
             },
             enumerable: false,
             configurable: true
@@ -1077,7 +1087,7 @@ define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/t
                 var blocks = [currentBlock];
                 function dfs(node) {
                     if (node.nodeType === type_3.default.ELEMENT_NODE) {
-                        if (kBlockElements[node.tagName]) {
+                        if (kBlockElements[node.ogTagName]) {
                             if (currentBlock.length > 0) {
                                 blocks.push(currentBlock = []);
                             }
@@ -1117,7 +1127,7 @@ define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/t
             configurable: true
         });
         HTMLElement.prototype.toString = function () {
-            var tag = this.tagName;
+            var tag = this.ogTagName;
             if (tag) {
                 var is_void = /^(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)$/i.test(tag);
                 var attrs = this.rawAttrs ? ' ' + this.rawAttrs : '';
@@ -1203,7 +1213,7 @@ define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/t
                 function dfs(node) {
                     var idStr = node.id ? ('#' + node.id) : '';
                     var classStr = node.classNames.length ? ('.' + node.classNames.join('.')) : '';
-                    write(node.tagName + idStr + classStr);
+                    write(node.ogTagName + idStr + classStr);
                     indention++;
                     node.childNodes.forEach(function (childNode) {
                         if (childNode.nodeType === type_3.default.ELEMENT_NODE) {
@@ -1394,7 +1404,7 @@ define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/t
                 var attrs = this.rawAttributes;
                 for (var key in attrs) {
                     var val = attrs[key] || '';
-                    this._attrs[key] = entities_1.decodeHTML(val);
+                    this._attrs[key] = he_1.decode(val);
                 }
                 return this._attrs;
             },
@@ -1463,7 +1473,7 @@ define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/t
             var attrs = this.rawAttributes;
             attrs[key] = String(value);
             if (this._attrs) {
-                this._attrs[key] = entities_1.decodeHTML(attrs[key]);
+                this._attrs[key] = he_1.decode(attrs[key]);
             }
             // Update rawString
             this.rawAttrs = Object.keys(attrs).map(function (name) {
@@ -1626,7 +1636,7 @@ define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/t
                 for (var attMatch = void 0; attMatch = kAttributePattern.exec(match[3]);) {
                     attrs[attMatch[2]] = attMatch[4] || attMatch[5] || attMatch[6];
                 }
-                var tagName = currentParent.tagName;
+                var tagName = currentParent.ogTagName;
                 if (options.upperCaseTagName) {
                     tagName = tagName.toLowerCase();
                 }
@@ -1687,13 +1697,13 @@ define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/t
             if (match[1] || match[4] || kSelfClosingElements[key]) {
                 // </ or /> or <br> etc.
                 while (true) {
-                    if (currentParent.tagName === match[2]) {
+                    if (currentParent.ogTagName === match[2]) {
                         stack.pop();
                         currentParent = back_2.default(stack);
                         break;
                     }
                     else {
-                        var tagName = currentParent.tagName;
+                        var tagName = currentParent.ogTagName;
                         if (options.upperCaseTagName) {
                             tagName = tagName.toLowerCase();
                         }
@@ -1727,7 +1737,7 @@ define("nodes/html", ["require", "exports", "nodes/node", "nodes/type", "nodes/t
                 var last = stack.pop();
                 var oneBefore = back_2.default(stack);
                 if (last.parentNode && last.parentNode.parentNode) {
-                    if (last.parentNode === oneBefore && last.tagName === oneBefore.tagName) {
+                    if (last.parentNode === oneBefore && last.ogTagName === oneBefore.ogTagName) {
                         // Pair error case <h3> <h3> handle : Fixes to <h3> </h3>
                         oneBefore.removeChild(last);
                         last.childNodes.forEach(function (child) {
@@ -1783,7 +1793,7 @@ define("nodes/node", ["require", "exports", "nodes/type", "back"], function (req
             this.previousSibling = null;
             this.nextElementSibling = null;
             this.previousElementSibling = null;
-            this.tagName = '';
+            this.ogTagName = '';
             this.parentNode = parentNode || null;
             this._ownerDocument = ownerDocument || this;
             this.options = options || {};

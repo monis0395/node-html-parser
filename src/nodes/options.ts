@@ -1,6 +1,7 @@
 export interface Options {
 	lowerCaseTagName?: boolean;
 	upperCaseTagName?: boolean;
+	upperCaseTagNameAccess?: boolean;
 	noFix?: boolean;
 	script?: boolean;
 	style?: boolean;

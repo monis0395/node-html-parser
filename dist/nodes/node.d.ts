@@ -16,7 +16,7 @@ export default abstract class Node {
     previousSibling: Node | null;
     nextElementSibling: Node | null;
     previousElementSibling: Node | null;
-    tagName: string;
+    ogTagName: string;
     private readonly _ownerDocument;
     protected options: Options;
     protected constructor(parentNode?: Node, ownerDocument?: Node, options?: Options);

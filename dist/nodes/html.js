@@ -24,7 +24,7 @@ var comment_1 = __importDefault(require("./comment"));
 var matcher_1 = __importDefault(require("../matcher"));
 var back_1 = __importDefault(require("../back"));
 var style_1 = __importDefault(require("./style"));
-var entities_1 = require("entities");
+var he_1 = require("he");
 var document_1 = __importDefault(require("./document"));
 var fixes_1 = require("./fixes");
 var kBlockElements = {
@@ -71,7 +71,7 @@ var HTMLElement = /** @class */ (function (_super) {
          */
         _this.nodeType = type_1.default.ELEMENT_NODE;
         _this.rawAttrs = rawAttrs || '';
-        _this.tagName = tagName || '';
+        _this.ogTagName = tagName || '';
         _this.childNodes = [];
         if (keyAttrs.id) {
             _this.id = keyAttrs.id;
@@ -117,7 +117,7 @@ var HTMLElement = /** @class */ (function (_super) {
          * @return {string} text content
          */
         get: function () {
-            return entities_1.decodeHTML(this.rawText);
+            return he_1.decode(this.rawText);
         },
         enumerable: false,
         configurable: true
@@ -161,14 +161,24 @@ var HTMLElement = /** @class */ (function (_super) {
     });
     Object.defineProperty(HTMLElement.prototype, "nodeName", {
         get: function () {
-            return this.tagName;
+            return this.ogTagName;
         },
         enumerable: false,
         configurable: true
     });
     Object.defineProperty(HTMLElement.prototype, "localName", {
         get: function () {
-            return this.tagName.toLowerCase();
+            return this.ogTagName.toLowerCase();
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(HTMLElement.prototype, "tagName", {
+        get: function () {
+            if (this.options.upperCaseTagNameAccess) {
+                return this.ogTagName.toUpperCase();
+            }
+            return this.ogTagName;
         },
         enumerable: false,
         configurable: true
@@ -183,7 +193,7 @@ var HTMLElement = /** @class */ (function (_super) {
             var blocks = [currentBlock];
             function dfs(node) {
                 if (node.nodeType === type_1.default.ELEMENT_NODE) {
-                    if (kBlockElements[node.tagName]) {
+                    if (kBlockElements[node.ogTagName]) {
                         if (currentBlock.length > 0) {
                             blocks.push(currentBlock = []);
                         }
@@ -223,7 +233,7 @@ var HTMLElement = /** @class */ (function (_super) {
         configurable: true
     });
     HTMLElement.prototype.toString = function () {
-        var tag = this.tagName;
+        var tag = this.ogTagName;
         if (tag) {
             var is_void = /^(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)$/i.test(tag);
             var attrs = this.rawAttrs ? ' ' + this.rawAttrs : '';
@@ -309,7 +319,7 @@ var HTMLElement = /** @class */ (function (_super) {
             function dfs(node) {
                 var idStr = node.id ? ('#' + node.id) : '';
                 var classStr = node.classNames.length ? ('.' + node.classNames.join('.')) : '';
-                write(node.tagName + idStr + classStr);
+                write(node.ogTagName + idStr + classStr);
                 indention++;
                 node.childNodes.forEach(function (childNode) {
                     if (childNode.nodeType === type_1.default.ELEMENT_NODE) {
@@ -500,7 +510,7 @@ var HTMLElement = /** @class */ (function (_super) {
             var attrs = this.rawAttributes;
             for (var key in attrs) {
                 var val = attrs[key] || '';
-                this._attrs[key] = entities_1.decodeHTML(val);
+                this._attrs[key] = he_1.decode(val);
             }
             return this._attrs;
         },
@@ -569,7 +579,7 @@ var HTMLElement = /** @class */ (function (_super) {
         var attrs = this.rawAttributes;
         attrs[key] = String(value);
         if (this._attrs) {
-            this._attrs[key] = entities_1.decodeHTML(attrs[key]);
+            this._attrs[key] = he_1.decode(attrs[key]);
         }
         // Update rawString
         this.rawAttrs = Object.keys(attrs).map(function (name) {
@@ -732,7 +742,7 @@ function parse(data, options) {
             for (var attMatch = void 0; attMatch = kAttributePattern.exec(match[3]);) {
                 attrs[attMatch[2]] = attMatch[4] || attMatch[5] || attMatch[6];
             }
-            var tagName = currentParent.tagName;
+            var tagName = currentParent.ogTagName;
             if (options.upperCaseTagName) {
                 tagName = tagName.toLowerCase();
             }
@@ -793,13 +803,13 @@ function parse(data, options) {
         if (match[1] || match[4] || kSelfClosingElements[key]) {
             // </ or /> or <br> etc.
             while (true) {
-                if (currentParent.tagName === match[2]) {
+                if (currentParent.ogTagName === match[2]) {
                     stack.pop();
                     currentParent = back_1.default(stack);
                     break;
                 }
                 else {
-                    var tagName = currentParent.tagName;
+                    var tagName = currentParent.ogTagName;
                     if (options.upperCaseTagName) {
                         tagName = tagName.toLowerCase();
                     }
@@ -833,7 +843,7 @@ function parse(data, options) {
             var last = stack.pop();
             var oneBefore = back_1.default(stack);
             if (last.parentNode && last.parentNode.parentNode) {
-                if (last.parentNode === oneBefore && last.tagName === oneBefore.tagName) {
+                if (last.parentNode === oneBefore && last.ogTagName === oneBefore.ogTagName) {
                     // Pair error case <h3> <h3> handle : Fixes to <h3> </h3>
                     oneBefore.removeChild(last);
                     last.childNodes.forEach(function (child) {
