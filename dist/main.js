@@ -1356,9 +1356,6 @@ define("nodes/html", ["require", "exports", "he", "nodes/node", "nodes/type", "n
             if (options.lowerCaseTagName) {
                 match[2] = match[2].toLowerCase();
             }
-            if (options.upperCaseTagName) {
-                match[2] = match[2].toUpperCase();
-            }
             if (!match[1]) {
                 // not </ tags
                 var attrs = {};

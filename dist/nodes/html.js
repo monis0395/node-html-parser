@@ -774,9 +774,6 @@ function parse(data, options) {
         if (options.lowerCaseTagName) {
             match[2] = match[2].toLowerCase();
         }
-        if (options.upperCaseTagName) {
-            match[2] = match[2].toUpperCase();
-        }
         if (!match[1]) {
             // not </ tags
             var attrs = {};

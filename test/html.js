@@ -12,8 +12,8 @@ describe('HTML Parser', function () {
 		it('should match corrent elements', function () {
 			const matcher = new Matcher('#id .a a.b *.a.b .a.b * a');
 			const MatchesNothingButStarEl = new HTMLElement('_', {});
-			const withIdEl = new HTMLElement('p', { id: 'id' });
-			const withClassNameEl = new HTMLElement('a', { class: 'a b' });
+			const withIdEl = new HTMLElement('p', {id: 'id'});
+			const withClassNameEl = new HTMLElement('a', {class: 'a b'});
 
 			matcher.advance(MatchesNothingButStarEl).should.not.be.ok; // #id
 			matcher.advance(withClassNameEl).should.not.be.ok; // #id
@@ -56,8 +56,10 @@ describe('HTML Parser', function () {
 
 			const root = parseHTML('<p id="id"><a class=\'cls\'>Hello</a><ul><li><li></ul><span></span></p>');
 
-			const p = new HTMLElement('p', { id: 'id' }, 'id="id"')
-				.appendChild(new HTMLElement('a', { class: 'cls' }, 'class=\'cls\''))
+			const p = new HTMLElement('p', {id: 'id'}, 'id="id"');
+			const el = new HTMLElement('a', {class: 'cls'}, 'class=\'cls\'')
+			p
+				.appendChild(el)
 				.appendChild(new TextNode('Hello'));
 			const ul = p.appendChild(new HTMLElement('ul', {}, ''));
 			ul.appendChild(new HTMLElement('li', {}, ''));
@@ -117,7 +119,7 @@ describe('HTML Parser', function () {
 		});
 
 		it('should parse "<div><a><!-- my comment --></a></div>" and return root element with comments', function () {
-			const root = parseHTML('<div><a><!-- my comment --></a></div>', { comment: true });
+			const root = parseHTML('<div><a><!-- my comment --></a></div>', {comment: true});
 
 			const div = new HTMLElement('div', {}, '');
 			const a = div.appendChild(new HTMLElement('a', {}, ''));
@@ -127,7 +129,7 @@ describe('HTML Parser', function () {
 		});
 
 		it('should not parse HTML inside comments', function () {
-			const root = parseHTML('<div><!--<a></a>--></div>', { comment: true });
+			const root = parseHTML('<div><!--<a></a>--></div>', {comment: true});
 
 			const div = new HTMLElement('div', {}, '');
 			const comment = div.appendChild(new CommentNode('<a></a>'));
@@ -396,8 +398,12 @@ describe('HTML Parser', function () {
 			it('should throw type Error', function () {
 				const root = parseHTML('<p a=12 b=13 c=14></p>');
 				const p = root.firstChild;
-				should.throws(function () { p.setAttribute('b') });
-				should.throws(function () { p.setAttribute() });
+				should.throws(function () {
+					p.setAttribute('b')
+				});
+				should.throws(function () {
+					p.setAttribute()
+				});
 			});
 			it('should keep quotes arount value', function () {
 				const root = parseHTML('<p a="12"></p>');
@@ -501,7 +507,7 @@ describe('HTML Parser', function () {
 			});
 
 			it('should not return comments in structured text', function () {
-				const root = parseHTML('<span>o<p>a</p><!-- my comment --></span>', { comment: true });
+				const root = parseHTML('<span>o<p>a</p><!-- my comment --></span>', {comment: true});
 				root.structuredText.should.eql('o\na');
 			});
 		});
@@ -529,7 +535,7 @@ describe('HTML Parser', function () {
 			it('set content pre', function () {
 				const root = parseHTML(`<html><head></head><body></body></html>`);
 				const body = root.querySelector("body");
-				body.set_content(`<pre>this    is some    preformatted    text</pre>`, { pre: true });
+				body.set_content(`<pre>this    is some    preformatted    text</pre>`, {pre: true});
 				root.toString().should.eql('<html><head></head><body><pre>this    is some    preformatted    text</pre></body></html>')
 			});
 		});
@@ -623,14 +629,14 @@ This content should be enclosed within an escaped p tag&lt;br /&gt;
 
 		it('#toString() should return comments when specified', function () {
 			const html = '<!----><p><!-- my comment --></p>';
-			const root = parseHTML(html, { comment: true });
+			const root = parseHTML(html, {comment: true});
 			root.toString().should.eql(html);
 		});
 	});
 
 	describe('Comment Element', function () {
 		it('comment nodeType should be 8', function () {
-			const root = parseHTML('<!-- my comment -->', { comment: true });
+			const root = parseHTML('<!-- my comment -->', {comment: true});
 			root.firstChild.nodeType.should.eql(8);
 		});
 	});

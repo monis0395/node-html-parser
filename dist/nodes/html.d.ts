@@ -172,7 +172,6 @@ export default class HTMLElement extends Node {
 }
 export interface Options {
     lowerCaseTagName?: boolean;
-    upperCaseTagName?: boolean;
     noFix?: boolean;
     script?: boolean;
     style?: boolean;
