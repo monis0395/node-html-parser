@@ -1534,7 +1534,7 @@ define("nodes/node", ["require", "exports", "nodes/type", "back"], function (req
              * @return {Node} first child element
              */
             get: function () {
-                return this.children[0];
+                return this.children[0] || null;
             },
             enumerable: false,
             configurable: true
@@ -1606,10 +1606,10 @@ define("nodes/node", ["require", "exports", "nodes/type", "back"], function (req
             }
             node.previousSibling = lastNode;
             node.nextSibling = null;
+            var lastElement = this.lastElementChild;
+            node.previousElementSibling = lastElement;
+            node.nextElementSibling = null;
             if (node.nodeType === type_3.default.ELEMENT_NODE) {
-                var lastElement = this.lastElementChild;
-                node.previousElementSibling = lastElement;
-                node.nextElementSibling = null;
                 this.children.push(node);
                 if (lastElement) {
                     lastElement.nextElementSibling = node;

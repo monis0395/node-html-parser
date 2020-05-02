@@ -54,7 +54,7 @@ var Node = /** @class */ (function () {
          * @return {Node} first child element
          */
         get: function () {
-            return this.children[0];
+            return this.children[0] || null;
         },
         enumerable: false,
         configurable: true
@@ -126,10 +126,10 @@ var Node = /** @class */ (function () {
         }
         node.previousSibling = lastNode;
         node.nextSibling = null;
+        var lastElement = this.lastElementChild;
+        node.previousElementSibling = lastElement;
+        node.nextElementSibling = null;
         if (node.nodeType === type_1.default.ELEMENT_NODE) {
-            var lastElement = this.lastElementChild;
-            node.previousElementSibling = lastElement;
-            node.nextElementSibling = null;
             this.children.push(node);
             if (lastElement) {
                 lastElement.nextElementSibling = node;
