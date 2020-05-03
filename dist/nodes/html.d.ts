@@ -1,0 +1,206 @@
+import Node from './node';
+import NodeType from './type';
+import TextNode from './text';
+import Style from './style';
+import Matcher from '../matcher';
+export interface KeyAttributes {
+    id?: string;
+    class?: string;
+}
+export interface Attributes {
+    [key: string]: string;
+}
+export interface RawAttributes {
+    [key: string]: string;
+}
+export declare type InsertPosition = 'beforebegin' | 'afterbegin' | 'beforeend' | 'afterend';
+/**
+ * HTMLElement, which contains a set of children.
+ *
+ * Note: this is a minimalist implementation, no complete tree
+ *   structure provided (no parentNode, nextSibling,
+ *   previousSibling etc).
+ * @class HTMLElement
+ * @extends {Node}
+ */
+export default class HTMLElement extends Node {
+    private _attrs;
+    private _rawAttrs;
+    private _baseURI;
+    private rawAttrs;
+    _id: string;
+    classNames: string[];
+    style: Style;
+    parentNode: Node;
+    tag: string;
+    private options;
+    /**
+     * Node Type declaration.
+     */
+    nodeType: NodeType;
+    /**
+     * Creates an instance of HTMLElement.
+     * @param tag			Name of the Tag
+     * @param keyAttrs		id and class attribute
+     * @param [rawAttrs]	attributes in string
+     * @param options		Options passed while parsing
+     * @param ownerDocument	owner of the document
+     *
+     * @memberof HTMLElement
+     */
+    constructor(tag: string, keyAttrs: KeyAttributes, rawAttrs?: string, options?: Options, ownerDocument?: Node);
+    get className(): string;
+    set className(names: string);
+    /**
+     * Get escpaed (as-it) text value of current node and its children.
+     * @return {string} text content
+     */
+    get rawText(): string;
+    /**
+     * Get unescaped text value of current node and its children.
+     * @return {string} text content
+     */
+    get text(): string;
+    get textContent(): string;
+    set textContent(text: string);
+    get id(): string;
+    set id(str: string);
+    get href(): string;
+    set href(str: string);
+    get src(): string;
+    set src(str: string);
+    get nodeName(): string;
+    get localName(): string;
+    /**
+     * Get tag value as per options.
+     * @return {string} text content
+     */
+    get tagName(): string;
+    get documentURI(): string;
+    /**
+     * Document Methods
+     */
+    get baseURI(): string;
+    /**
+     * Creates a new Text node.
+     * @return {string} structured text
+     */
+    createElement(tagName: string): HTMLElement;
+    /**
+     * Creates a new Text node.
+     * @return {string} structured text
+     */
+    createTextNode(data: string): TextNode;
+    get title(): string;
+    get documentElement(): this;
+    get head(): HTMLElement;
+    get body(): HTMLElement;
+    /**
+     * Get structured Text (with '\n' etc.)
+     * @return {string} structured text
+     */
+    get structuredText(): string;
+    toString(): string;
+    get innerHTML(): string;
+    set innerHTML(html: string);
+    set_content(content: string | Node | Node[], options?: Options): void;
+    get outerHTML(): string;
+    /**
+     * Trim element from right (in block) after seeing pattern in a TextNode.
+     * @param  {RegExp} pattern pattern to find
+     * @return {HTMLElement}    reference to current node
+     */
+    trimRight(pattern: RegExp): this;
+    /**
+     * Get DOM structure
+     * @return {string} strucutre
+     */
+    get structure(): string;
+    /**
+     * Remove whitespaces in this sub tree.
+     * @return {HTMLElement} pointer to this
+     */
+    removeWhitespace(): this;
+    /**
+     * HTMLCollection of elements with the given tag name.
+     * @param  {tagName} tagName is a string representing the name of the elements.
+     * @return {HTMLElement[]} matching elements
+     */
+    getElementsByTagName(tagName: string): HTMLElement[];
+    /**
+     * Get Elements whose class property matches the specified string.
+     * @param  {string} className is a string representing the class name(s) to match
+     * @return {HTMLElement[]} all child elements which have all of the given class name(s)
+     */
+    getElementsByClassName(className: string): HTMLElement[];
+    /**
+     * returns an Element object representing the element whose id property matches the specified string.
+     * @param  {string} id of the element to locate
+     * @return {(HTMLElement | null)}  An Element matching the specified ID, or null if no matching element was found
+     */
+    getElementById(id: string): HTMLElement | null;
+    /**
+     * Query CSS selector to find matching nodes.
+     * @param  {string}         selector Simplified CSS selector
+     * @param  {Matcher}        selector A Matcher instance
+     * @return {HTMLElement[]}  matching elements
+     */
+    querySelectorAll(selector: string | Matcher): HTMLElement[];
+    /**
+     * Query CSS Selector to find matching node.
+     * @param  {string}         selector Simplified CSS selector
+     * @param  {Matcher}        selector A Matcher instance
+     * @return {HTMLElement}    matching node
+     */
+    querySelector(selector: string | Matcher): HTMLElement;
+    /**
+     * Get attributes
+     * @return {Object} parsed and unescaped attributes
+     */
+    get attributes(): Attributes;
+    /**
+     * Get escaped (as-it) attributes
+     * @return {Object} parsed attributes
+     */
+    get rawAttributes(): RawAttributes;
+    removeAttribute(key: string): void;
+    hasAttribute(key: string): boolean;
+    /**
+     * Get an attribute
+     * @return {string} value of the attribute
+     */
+    getAttribute(key: string): string;
+    /**
+     * Set an attribute value to the HTMLElement
+     * @param {string} key The attribute name
+     * @param {string} value The value to set, or null / undefined to remove an attribute
+     */
+    setAttribute(key: string, value: string): void;
+    /**
+     * Replace all the attributes of the HTMLElement by the provided attributes
+     * @param {Attributes} attributes the new attribute set
+     */
+    setAttributes(attributes: Attributes): void;
+    insertAdjacentHTML(where: InsertPosition, html: string): void;
+}
+export interface Options {
+    lowerCaseTagName?: boolean;
+    upperCaseTagName?: boolean;
+    noFix?: boolean;
+    script?: boolean;
+    style?: boolean;
+    pre?: boolean;
+    comment?: boolean;
+    url?: string;
+}
+/**
+ * Parses HTML and returns a root element
+ * Parse a chuck of HTML source.
+ * @param  {string} data      html
+ * @return {HTMLElement}      root element
+ */
+export declare function parse(data: string, options?: Options): (TextNode & {
+    valid: boolean;
+}) | (HTMLElement & {
+    valid: boolean;
+});
