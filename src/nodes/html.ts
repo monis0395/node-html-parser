@@ -96,30 +96,6 @@ export default class HTMLElement extends Node {
 		}
 	}
 	/**
-	 * Remove Child element from childNodes array
-	 * @param {HTMLElement} node     node to remove
-	 */
-	public removeChild(node: Node) {
-		this.childNodes = this.childNodes.filter((child) => {
-			return (child !== node);
-		});
-	}
-	/**
-	 * Exchanges given child with new child
-	 * @param {HTMLElement} oldNode     node to exchange
-	 * @param {HTMLElement} newNode     new node
-	 */
-	public exchangeChild(oldNode: Node, newNode: Node) {
-		let idx = -1;
-		for (let i = 0; i < this.childNodes.length; i++) {
-			if (this.childNodes[i] === oldNode) {
-				idx = i;
-				break;
-			}
-		}
-		this.childNodes[idx] = newNode;
-	}
-	/**
 	 * Get escpaed (as-it) text value of current node and its children.
 	 * @return {string} text content
 	 */
@@ -335,7 +311,12 @@ export default class HTMLElement extends Node {
 			}
 			this.childNodes[o++] = node;
 		});
-		this.childNodes.length = o;
+		for (; o < this.childNodes.length; o++) {
+			const node = this.childNodes[o];
+			if (node) {
+				this.removeChild(node);
+			}
+		}
 		return this;
 	}
 
@@ -476,36 +457,6 @@ export default class HTMLElement extends Node {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Append a child node to childNodes
-	 * @param  {Node} node node to append
-	 * @return {Node}      node appended
-	 */
-	public appendChild<T extends Node = Node>(node: T) {
-		// node.parentNode = this;
-		this.childNodes.push(node);
-		if (node instanceof HTMLElement) {
-			node.parentNode = this;
-		}
-		return node;
-	}
-
-	/**
-	 * Get first child node
-	 * @return {Node} first child node
-	 */
-	public get firstChild() {
-		return this.childNodes[0];
-	}
-
-	/**
-	 * Get last child node
-	 * @return {Node} last child node
-	 */
-	public get lastChild() {
-		return arr_back(this.childNodes);
 	}
 
 	/**

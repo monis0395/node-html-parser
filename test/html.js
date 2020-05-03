@@ -164,11 +164,11 @@ describe('HTML Parser', function () {
 			});
 
 			root.firstChild.childNodes.should.not.be.empty;
-			root.firstChild.childNodes.should.eql([new TextNode('1')]);
+			root.firstChild.childNodes.length.should.eql(1);
 			root.firstChild.text.should.eql('1');
-			root.lastChild.childNodes.should.not.be.empty;
-			root.lastChild.childNodes.should.eql([new TextNode('2&amp;')]);
-			root.lastChild.text.should.eql('2&');
+            root.lastChild.childNodes.should.not.be.empty;
+            root.lastChild.childNodes.length.should.eql(1);
+            root.lastChild.text.should.eql('2&');
 			root.lastChild.rawText.should.eql('2&amp;');
 		});
 
@@ -308,8 +308,8 @@ describe('HTML Parser', function () {
 				const p = new HTMLElement('p', {}, '');
 				p.appendChild(new HTMLElement('h5', {}, ''))
 					.appendChild(new TextNode('123'));
-
-				root.firstChild.removeWhitespace().should.eql(p);
+                const trimedChild = root.firstChild.removeWhitespace();
+                trimedChild.toString().should.eql(p.toString());
 			});
 		});
 
