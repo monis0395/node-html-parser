@@ -15,7 +15,7 @@ export default abstract class Node {
 	previousSibling: Node | null = null;
 	nextElementSibling: Node | null = null;
 	previousElementSibling: Node | null = null;
-	private readonly _ownerDocument: Node;
+	private _ownerDocument: Node;
 
 	protected constructor(ownerDocument?: Node) {
 		this._ownerDocument = ownerDocument || null;
@@ -128,6 +128,7 @@ export default abstract class Node {
 		this.childNodes.push(node);
 
 		node.parentNode = this;
+		node._ownerDocument = this.ownerDocument;
 		return node;
 	}
 
@@ -174,8 +175,13 @@ export default abstract class Node {
 			if (nextSibling) {
 				nextSibling.previousElementSibling = newNode;
 			}
-			this.children.splice(this.children.indexOf(oldNode), 1);
+			const index = this.children.indexOf(oldNode);
+			if (index !== -1) {
+				this.children[index] = newNode;
+			}
 		}
+		newNode.parentNode = oldNode.parentNode;
+		newNode._ownerDocument = this.ownerDocument;
 	}
 
 	/**

@@ -2,8 +2,8 @@ import Node from './node';
 import NodeType from './type';
 
 export default class CommentNode extends Node {
-	constructor(value: string) {
-		super();
+	constructor(value: string, ownerDocument?: Node) {
+		super(ownerDocument);
 		this.rawText = value;
 	}
 

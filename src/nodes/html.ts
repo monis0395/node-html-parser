@@ -66,11 +66,12 @@ export default class HTMLElement extends Node {
 	 * @param keyAttrs		id and class attribute
 	 * @param [rawAttrs]	attributes in string
 	 * @param options		Options passed while parsing
+	 * @param ownerDocument	owner of the document
 	 *
 	 * @memberof HTMLElement
 	 */
-	public constructor(tag: string, keyAttrs: KeyAttributes, rawAttrs?:string, options?: Options) {
-		super();
+	public constructor(tag: string, keyAttrs: KeyAttributes, rawAttrs?:string, options?: Options, ownerDocument?: Node) {
+		super(ownerDocument);
 		this.tag = tag || '';
 		this.rawAttrs = rawAttrs || '';
 		this.options = options || {};
@@ -194,7 +195,7 @@ export default class HTMLElement extends Node {
 	 * @return {string} structured text
 	 */
 	public createElement(tagName: string): HTMLElement {
-		return new HTMLElement(tagName, {}, '', this.options);
+		return new HTMLElement(tagName, {}, '', this.options, this.ownerDocument);
 	}
 
 	/**
@@ -202,7 +203,7 @@ export default class HTMLElement extends Node {
 	 * @return {string} structured text
 	 */
 	public createTextNode(data: string): TextNode {
-		return new TextNode(data);
+		return new TextNode(data, this.ownerDocument);
 	}
 
 	public get title() {
@@ -295,7 +296,7 @@ export default class HTMLElement extends Node {
 			content = [content];
 		} else if (typeof content == 'string') {
 			const r = parse(content, options);
-			content = r.childNodes.length ? r.childNodes : [new TextNode(content)];
+			content = r.childNodes.length ? r.childNodes : [new TextNode(content, this.ownerDocument)];
 			this.children = r.children;
 		}
 		this.childNodes = content;
@@ -740,7 +741,7 @@ export function parse(data: string, options = {} as Options) {
 			if (lastTextPos + match[0].length < kMarkupPattern.lastIndex) {
 				// if has content
 				const text = data.substring(lastTextPos, kMarkupPattern.lastIndex - match[0].length);
-				currentParent.appendChild(new TextNode(text));
+				currentParent.appendChild(new TextNode(text, root));
 			}
 		}
 		lastTextPos = kMarkupPattern.lastIndex;
@@ -752,7 +753,7 @@ export function parse(data: string, options = {} as Options) {
 			if (options.comment) {
 				// Only keep what is in between <!-- and -->
 				const text = data.substring(lastTextPos - 3, lastTextPos - match[0].length + 4);
-				currentParent.appendChild(new CommentNode(text));
+				currentParent.appendChild(new CommentNode(text, root));
 			}
 			continue;
 		}
@@ -775,7 +776,7 @@ export function parse(data: string, options = {} as Options) {
 			}
 			// ignore container tag we add above
 			// https://github.com/taoqf/node-html-parser/issues/38
-			currentParent = currentParent.appendChild(new HTMLElement(match[2], attrs, match[3], options));
+			currentParent = currentParent.appendChild(new HTMLElement(match[2], attrs, match[3], options, root));
 			stack.push(currentParent);
 			if (kBlockTextElements[match[2]]) {
 				// a little test to find next </script> or </style> ...
@@ -796,7 +797,7 @@ export function parse(data: string, options = {} as Options) {
 						text = data.substring(kMarkupPattern.lastIndex, index);
 					}
 					if (text.length > 0) {
-						currentParent.appendChild(new TextNode(text));
+						currentParent.appendChild(new TextNode(text, root));
 					}
 				}
 				if (index === -1) {

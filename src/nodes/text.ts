@@ -6,8 +6,8 @@ import Node from './node';
  * @param {string} value [description]
  */
 export default class TextNode extends Node {
-	constructor(value: string) {
-		super();
+	constructor(value: string, ownerDocument?: Node) {
+		super(ownerDocument);
 		this.rawText = value;
 	}
 
