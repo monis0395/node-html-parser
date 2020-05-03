@@ -2,6 +2,7 @@ import { decode } from 'he';
 import Node from './node';
 import NodeType from './type';
 import TextNode from './text';
+import Style from './style';
 import Matcher from '../matcher';
 import arr_back from '../back';
 import CommentNode from './comment';
@@ -47,8 +48,9 @@ export default class HTMLElement extends Node {
 	private _attrs: Attributes;
 	private _rawAttrs: RawAttributes;
 	private rawAttrs = '';
-	public id: string;
+	public _id: string;
 	public classNames = [] as string[];
+	public style: Style;
 	public parentNode: Node = null;
 	public tag: string;
 	private options: Options;
@@ -72,10 +74,25 @@ export default class HTMLElement extends Node {
 		this.options = options || {};
 		this.childNodes = [];
 		if (keyAttrs.id) {
-			this.id = keyAttrs.id;
+			this._id = keyAttrs.id;
 		}
 		if (keyAttrs.class) {
 			this.classNames = keyAttrs.class.split(/\s+/);
+		}
+		this.style = new Style(this);
+	}
+
+	get className() {
+		const names = this.classNames;
+		if (names) {
+			return names.join(' ');
+		}
+		return '';
+	}
+
+	set className(names) {
+		if (names) {
+			this.classNames = names.split(' ');
 		}
 	}
 	/**
@@ -117,6 +134,47 @@ export default class HTMLElement extends Node {
 	 */
 	public get text() {
 		return decode(this.rawText);
+	}
+
+	public get textContent() {
+		return this.text;
+	}
+
+	public set textContent(text: string) {
+		this.set_content(text);
+	}
+
+	public get id(): string {
+		return this._id || this.getAttribute('id') as string || '';
+	}
+
+	public set id(str: string) {
+		this._id = str;
+		this.setAttribute('id', str);
+	}
+
+	public get href() {
+		return this.getAttribute('href') || '';
+	}
+
+	public set href(str) {
+		this.setAttribute('href', str);
+	}
+
+	public get src() {
+		return this.getAttribute('src') || '';
+	}
+
+	public set src(str) {
+		this.setAttribute('src', str);
+	}
+
+	public get nodeName() {
+		return this.tag;
+	}
+
+	public get localName() {
+		return this.tag.toLowerCase();
 	}
 	/**
 	 * Get tag value as per options.
@@ -192,7 +250,11 @@ export default class HTMLElement extends Node {
 		}).join('');
 	}
 
-	public set_content(content: string | Node | Node[], options = {} as Options) {
+	public set innerHTML(html) {
+		this.set_content(html, this.options);
+	}
+
+	public set_content(content: string | Node | Node[], options = this.options) {
 		if (content instanceof Node) {
 			content = [content];
 		} else if (typeof content == 'string') {
@@ -275,6 +337,34 @@ export default class HTMLElement extends Node {
 		});
 		this.childNodes.length = o;
 		return this;
+	}
+
+	/**
+	 * HTMLCollection of elements with the given tag name.
+	 * @param  {tagName} tagName is a string representing the name of the elements.
+	 * @return {HTMLElement[]} matching elements
+	 */
+	public getElementsByTagName(tagName: string): HTMLElement[] {
+		// todo: think if people will pass tagName in lower or upper case?
+		return this.querySelectorAll(tagName);
+	}
+
+	/**
+	 * Get Elements whose class property matches the specified string.
+	 * @param  {string} className is a string representing the class name(s) to match
+	 * @return {HTMLElement[]} all child elements which have all of the given class name(s)
+	 */
+	public getElementsByClassName(className: string): HTMLElement[] {
+		return this.querySelectorAll(`.${className}`);
+	}
+
+	/**
+	 * returns an Element object representing the element whose id property matches the specified string.
+	 * @param  {string} id of the element to locate
+	 * @return {(HTMLElement | null)}  An Element matching the specified ID, or null if no matching element was found
+	 */
+	public getElementById(id: string): HTMLElement | null {
+		return this.querySelector(`#${id}`);
 	}
 
 	/**
