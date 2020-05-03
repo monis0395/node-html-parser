@@ -6,6 +6,7 @@ import Style from './style';
 import Matcher from '../matcher';
 import arr_back from '../back';
 import CommentNode from './comment';
+import { URL } from "url";
 
 export interface KeyAttributes {
 	id?: string;
@@ -47,6 +48,7 @@ const kBlockElements = {
 export default class HTMLElement extends Node {
 	private _attrs: Attributes;
 	private _rawAttrs: RawAttributes;
+	private _baseURI = '';
 	private rawAttrs = '';
 	public _id: string;
 	public classNames = [] as string[];
@@ -162,6 +164,64 @@ export default class HTMLElement extends Node {
 		}
 		return this.tag;
 	}
+
+	get documentURI() {
+		return this.options.url
+	}
+
+	/**
+	 * Document Methods
+	 */
+
+	get baseURI() {
+		if (this._baseURI || this._baseURI === '') {
+			return this._baseURI;
+		}
+		this._baseURI = this.documentURI;
+		const baseElements = this.getElementsByTagName('base');
+		const href = baseElements[0] && baseElements[0].getAttribute('href');
+		if (href) {
+			try {
+				this._baseURI = (new URL(href, this._baseURI)).href;
+			} catch (ex) {/* Just fall back to documentURI */
+			}
+		}
+		return this._baseURI
+	}
+
+	/**
+	 * Creates a new Text node.
+	 * @return {string} structured text
+	 */
+	public createElement(tagName: string): HTMLElement {
+		return new HTMLElement(tagName, {}, '', this.options);
+	}
+
+	/**
+	 * Creates a new Text node.
+	 * @return {string} structured text
+	 */
+	public createTextNode(data: string): TextNode {
+		return new TextNode(data);
+	}
+
+	public get title() {
+		const node = this.getElementsByTagName('title')[0];
+		return (node && node.textContent) || '';
+	}
+
+	public get documentElement() {
+		return this;
+	}
+
+	public get head() {
+		return this.getElementsByTagName('head')[0];
+	}
+
+	public get body() {
+		return this.getElementsByTagName('body')[0];
+	}
+
 	/**
 	 * Get structured Text (with '\n' etc.)
 	 * @return {string} structured text
@@ -236,8 +296,12 @@ export default class HTMLElement extends Node {
 		} else if (typeof content == 'string') {
 			const r = parse(content, options);
 			content = r.childNodes.length ? r.childNodes : [new TextNode(content)];
+			this.children = r.children;
 		}
 		this.childNodes = content;
+		for (let i = this.childNodes.length; --i >= 0;) {
+			this.childNodes[i].parentNode = this;
+		}
 	}
 
 	public get outerHTML() {
@@ -652,6 +716,7 @@ export interface Options {
 	style?: boolean;
 	pre?: boolean;
 	comment?: boolean;
+	url?: string;
 }
 
 const frameflag = 'documentfragmentcontainer';
