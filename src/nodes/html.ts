@@ -46,23 +46,30 @@ const kBlockElements = {
 export default class HTMLElement extends Node {
 	private _attrs: Attributes;
 	private _rawAttrs: RawAttributes;
+	private rawAttrs = '';
 	public id: string;
 	public classNames = [] as string[];
+	public parentNode: Node = null;
+	public tag: string;
+	private options: Options;
 	/**
 	 * Node Type declaration.
 	 */
 	public nodeType = NodeType.ELEMENT_NODE;
 	/**
 	 * Creates an instance of HTMLElement.
-	 * @param keyAttrs	id and class attribute
+	 * @param tag			Name of the Tag
+	 * @param keyAttrs		id and class attribute
 	 * @param [rawAttrs]	attributes in string
+	 * @param options		Options passed while parsing
 	 *
 	 * @memberof HTMLElement
 	 */
-	public constructor(public tagName: string, keyAttrs: KeyAttributes, private rawAttrs = '', public parentNode = null as Node) {
+	public constructor(tag: string, keyAttrs: KeyAttributes, rawAttrs?:string, options?: Options) {
 		super();
+		this.tag = tag || '';
 		this.rawAttrs = rawAttrs || '';
-		this.parentNode = parentNode || null;
+		this.options = options || {};
 		this.childNodes = [];
 		if (keyAttrs.id) {
 			this.id = keyAttrs.id;
@@ -112,6 +119,16 @@ export default class HTMLElement extends Node {
 		return decode(this.rawText);
 	}
 	/**
+	 * Get tag value as per options.
+	 * @return {string} text content
+	 */
+	public get tagName() {
+		if (this.options.upperCaseTagName) {
+			return this.tag.toUpperCase();
+		}
+		return this.tag;
+	}
+	/**
 	 * Get structured Text (with '\n' etc.)
 	 * @return {string} structured text
 	 */
@@ -120,7 +137,7 @@ export default class HTMLElement extends Node {
 		const blocks = [currentBlock];
 		function dfs(node: Node) {
 			if (node.nodeType === NodeType.ELEMENT_NODE) {
-				if (kBlockElements[(node as HTMLElement).tagName]) {
+				if (kBlockElements[(node as HTMLElement).tag]) {
 					if (currentBlock.length > 0) {
 						blocks.push(currentBlock = []);
 					}
@@ -155,7 +172,7 @@ export default class HTMLElement extends Node {
 	}
 
 	public toString() {
-		const tag = this.tagName;
+		const tag = this.tag;
 		if (tag) {
 			const is_void = /^(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)$/i.test(tag);
 			const attrs = this.rawAttrs ? ' ' + this.rawAttrs : '';
@@ -223,7 +240,7 @@ export default class HTMLElement extends Node {
 		function dfs(node: HTMLElement) {
 			const idStr = node.id ? ('#' + node.id) : '';
 			const classStr = node.classNames.length ? ('.' + node.classNames.join('.')) : '';
-			write(node.tagName + idStr + classStr);
+			write(node.tag + idStr + classStr);
 			indention++;
 			node.childNodes.forEach((childNode) => {
 				if (childNode.nodeType === NodeType.ELEMENT_NODE) {
@@ -588,6 +605,7 @@ const kBlockTextElements = {
 
 export interface Options {
 	lowerCaseTagName?: boolean;
+	upperCaseTagName?: boolean;
 	noFix?: boolean;
 	script?: boolean;
 	style?: boolean;
@@ -604,7 +622,7 @@ const frameflag = 'documentfragmentcontainer';
  * @return {HTMLElement}      root element
  */
 export function parse(data: string, options = {} as Options) {
-	const root = new HTMLElement(null, {});
+	const root = new HTMLElement(null, {}, '', options);
 	let currentParent = root;
 	const stack = [root];
 	let lastTextPos = -1;
@@ -642,7 +660,7 @@ export function parse(data: string, options = {} as Options) {
 				attrs[attMatch[2]] = attMatch[4] || attMatch[5] || attMatch[6];
 			}
 
-			const tagName = currentParent.tagName as 'li' | 'p' | 'b' | 'td' | 'th' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+			const tagName = currentParent.tag as 'li' | 'p' | 'b' | 'td' | 'th' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 			if (!match[4] && kElementsClosedByOpening[tagName]) {
 				if (kElementsClosedByOpening[tagName][match[2]]) {
 					stack.pop();
@@ -651,7 +669,7 @@ export function parse(data: string, options = {} as Options) {
 			}
 			// ignore container tag we add above
 			// https://github.com/taoqf/node-html-parser/issues/38
-			currentParent = currentParent.appendChild(new HTMLElement(match[2], attrs, match[3]));
+			currentParent = currentParent.appendChild(new HTMLElement(match[2], attrs, match[3], options));
 			stack.push(currentParent);
 			if (kBlockTextElements[match[2]]) {
 				// a little test to find next </script> or </style> ...
@@ -686,12 +704,12 @@ export function parse(data: string, options = {} as Options) {
 		if (match[1] || match[4] || kSelfClosingElements[match[2]]) {
 			// </ or /> or <br> etc.
 			while (true) {
-				if (currentParent.tagName === match[2]) {
+				if (currentParent.tag === match[2]) {
 					stack.pop();
 					currentParent = arr_back(stack);
 					break;
 				} else {
-					const tagName = currentParent.tagName as 'li' | 'a' | 'b' | 'i' | 'p' | 'td' | 'th';
+					const tagName = currentParent.tag as 'li' | 'a' | 'b' | 'i' | 'p' | 'td' | 'th';
 					// Trying to close current tag, and move on
 					if (kElementsClosedByClosing[tagName]) {
 						if (kElementsClosedByClosing[tagName][match[2]]) {
@@ -716,7 +734,7 @@ export function parse(data: string, options = {} as Options) {
 			const last = stack.pop();
 			const oneBefore = arr_back(stack);
 			if (last.parentNode && (last.parentNode as HTMLElement).parentNode) {
-				if (last.parentNode === oneBefore && last.tagName === oneBefore.tagName) {
+				if (last.parentNode === oneBefore && last.tag === oneBefore.tag) {
 					// Pair error case <h3> <h3> handle : Fixes to <h3> </h3>
 					oneBefore.removeChild(last);
 					last.childNodes.forEach((child) => {

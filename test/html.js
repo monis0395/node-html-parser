@@ -78,7 +78,7 @@ describe('HTML Parser', function () {
 			const img = a.appendChild(new HTMLElement('img', {}, ''));
 			const p = div.appendChild(new HTMLElement('p', {}, ''));
 
-			root.firstChild.should.eql(div);
+			root.firstChild.toString().should.eql(div.toString());
 
 		});
 
@@ -123,7 +123,7 @@ describe('HTML Parser', function () {
 			const a = div.appendChild(new HTMLElement('a', {}, ''));
 			const comment = a.appendChild(new CommentNode(' my comment '));
 
-			root.firstChild.should.eql(div);
+			root.firstChild.toString().should.eql(div.toString());
 		});
 
 		it('should not parse HTML inside comments', function () {
@@ -132,7 +132,7 @@ describe('HTML Parser', function () {
 			const div = new HTMLElement('div', {}, '');
 			const comment = div.appendChild(new CommentNode('<a></a>'));
 
-			root.firstChild.should.eql(div);
+			root.firstChild.toString().should.eql(div.toString());
 		});
 
 		it('should parse picture element', function () {

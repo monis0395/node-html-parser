@@ -113,7 +113,7 @@ const functionCache = {
 		'use strict';
 		tagName = tagName || '';
 		classes = classes || [];
-		if (el.tagName !== tagName) {
+		if (el.tag !== tagName) {
 			return false;
 		}
 		for (let cls = classes, i = 0; i < cls.length; i++) {
@@ -126,12 +126,12 @@ const functionCache = {
 	f35(el: HTMLElement, tagName: string) {
 		'use strict';
 		tagName = tagName || '';
-		return el.tagName === tagName;
+		return el.tag === tagName;
 	},
 	f3(el: HTMLElement, tagName: string) {
 		'use strict';
 		tagName = tagName || '';
-		if (el.tagName !== tagName) {
+		if (el.tag !== tagName) {
 			return false;
 		}
 	}
@@ -189,7 +189,7 @@ export default class Matcher {
 						function_name += '5';
 
 					} else {
-						// source += 'if (el.tagName != ' + JSON.stringify(tagName) + ') return false;';// 3
+						// source += 'if (el.tag != ' + JSON.stringify(tagName) + ') return false;';// 3
 						function_name += '3';
 					}
 				}
