@@ -109,9 +109,10 @@ var Node = /** @class */ (function () {
      * @return {Node}      node appended
      */
     Node.prototype.appendChild = function (node) {
-        // if (node.parentNode) {
-        // 	node.parentNode.removeChild(node);
-        // }
+        if (node.parentNode) {
+            console.debug('node.parentNode', node.parentNode);
+            // node.parentNode.removeChild(node);
+        }
         var lastNode = this.lastChild;
         if (lastNode) {
             lastNode.nextSibling = node;

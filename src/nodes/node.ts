@@ -102,9 +102,10 @@ export default abstract class Node {
 	 * @return {Node}      node appended
 	 */
 	public appendChild<T extends Node = Node>(node: T) {
-		// if (node.parentNode) {
-		// 	node.parentNode.removeChild(node);
-		// }
+		if (node.parentNode) {
+			console.debug('node.parentNode', node.parentNode);
+			// node.parentNode.removeChild(node);
+		}
 		const lastNode = this.lastChild;
 		if (lastNode) {
 			lastNode.nextSibling = node;
