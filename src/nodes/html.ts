@@ -6,7 +6,7 @@ import Style from './style';
 import Matcher from '../matcher';
 import arr_back from '../back';
 import CommentNode from './comment';
-import { URL } from "url";
+import { URL } from 'url';
 
 export interface KeyAttributes {
 	id?: string;
@@ -70,7 +70,7 @@ export default class HTMLElement extends Node {
 	 *
 	 * @memberof HTMLElement
 	 */
-	public constructor(tag: string, keyAttrs: KeyAttributes, rawAttrs?:string, options?: Options, ownerDocument?: Node) {
+	public constructor(tag: string, keyAttrs: KeyAttributes, rawAttrs?: string, options?: Options, ownerDocument?: Node) {
 		super(ownerDocument);
 		this.tag = tag || '';
 		this.rawAttrs = rawAttrs || '';
@@ -124,7 +124,7 @@ export default class HTMLElement extends Node {
 	}
 
 	public get id(): string {
-		return this._id || this.getAttribute('id') as string || '';
+		return this._id || this.getAttribute('id') || '';
 	}
 
 	public set id(str: string) {

@@ -235,20 +235,22 @@ const styleMap = {
 	'wordWrap': 'word-wrap',
 	'writingMode': 'writing-mode',
 	'zIndex': 'z-index',
-	'zoom': 'zoom',
+	'zoom': 'zoom'
 };
 
 // For each item in styleMap, define a getter and setter on the style property.
 for (const jsName in styleMap) {
-	const cssName = styleMap[jsName];
+	const cssName: string = styleMap[jsName] as string;
 	Object.defineProperty(Style, jsName, {
 		get(): string | undefined {
-			return this.getStyle(cssName);
+			const style = this as Style;
+			return style.getStyle(cssName);
 		},
-		set(value): void {
-			this.setStyle(cssName, value);
+		set(value: string): void {
+			const style = this as Style;
+			style.setStyle(cssName, value);
 		},
 		enumerable: false,
-		configurable: true,
+		configurable: true
 	});
 }
